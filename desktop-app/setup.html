@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<title>Claude Traffic Light — Cài đặt</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, "Segoe UI", Arial, sans-serif;
+    background: #1c1c20;
+    color: #e6e6ea;
+    padding: 20px 24px 28px;
+  }
+  h1 { font-size: 18px; margin: 0 0 4px; }
+  .sub { color: #9a9aa4; font-size: 13px; margin: 0 0 18px; line-height: 1.5; }
+  .dots { display: flex; gap: 8px; margin-bottom: 18px; }
+  .dot { width: 14px; height: 14px; border-radius: 50%; }
+  .dot.red { background: #e63228; box-shadow: 0 0 10px 1px #e6322888; }
+  .dot.yellow { background: #f5b414; box-shadow: 0 0 10px 1px #f5b41488; }
+  .dot.green { background: #28b446; box-shadow: 0 0 10px 1px #28b44688; }
+  section {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+  }
+  section h2 { font-size: 14px; margin: 0 0 8px; }
+  section p { font-size: 12.5px; color: #b9b9c0; margin: 0 0 10px; line-height: 1.5; }
+  button {
+    background: #3a6df0;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 12.5px;
+    cursor: pointer;
+    margin-right: 8px;
+  }
+  button.secondary { background: rgba(255,255,255,0.1); color: #e6e6ea; }
+  button:hover { filter: brightness(1.12); }
+  .result { margin-top: 10px; font-size: 12px; min-height: 14px; }
+  .result.ok { color: #4fd67a; }
+  .result.err { color: #ff6b6b; }
+  textarea {
+    width: 100%;
+    height: 130px;
+    background: #111114;
+    color: #d7d7dd;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    font-size: 11px;
+    font-family: Consolas, monospace;
+    padding: 8px;
+    resize: vertical;
+    margin-top: 10px;
+  }
+  code { background: rgba(255,255,255,0.08); padding: 1px 5px; border-radius: 4px; }
+</style>
+</head>
+<body>
+  <h1>Claude Traffic Light</h1>
+  <p class="sub">Đèn giao thông ảo cho Claude Code — chạy ngay trên máy bạn, không cần cài server rời.<br />
+  🔴 đỏ = Claude đang chờ xác nhận &nbsp;·&nbsp; 🟡 vàng = đang chạy &nbsp;·&nbsp; 🟢 xanh = xong việc.</p>
+  <div class="dots">
+    <div class="dot red"></div>
+    <div class="dot yellow"></div>
+    <div class="dot green"></div>
+  </div>
+
+  <section>
+    <h2>Cách 1 — Kết nối tự động (khuyên dùng)</h2>
+    <p>Bấm nút bên dưới để tự động thêm cấu hình vào Claude Code. Chỉ cần làm 1 lần duy nhất.</p>
+    <button id="btnConnect">Connect to Claude</button>
+    <div id="connectResult" class="result"></div>
+  </section>
+
+  <section>
+    <h2>Cách 2 — Chạy script (nếu Cách 1 không được)</h2>
+    <p>Mở thư mục chứa <code>connect-claude.ps1</code>, chuột phải file đó → <b>Run with PowerShell</b>.
+    Hoặc copy lệnh rồi dán vào cửa sổ PowerShell.</p>
+    <button id="btnShowScript" class="secondary">Mở vị trí file</button>
+    <button id="btnCopyCmd" class="secondary">Copy lệnh chạy</button>
+    <div id="scriptResult" class="result"></div>
+  </section>
+
+  <section>
+    <h2>Cách 3 — Nhờ Claude tự setup</h2>
+    <p>Copy đoạn dưới, dán vào cửa sổ Claude Code của bạn — Claude sẽ tự đọc và cấu hình giúp.</p>
+    <button id="btnCopyPrompt" class="secondary">Copy prompt</button>
+    <div id="promptResult" class="result"></div>
+    <textarea id="promptText" readonly></textarea>
+  </section>
+
+  <p class="sub">Sau khi làm xong 1 trong 3 cách, hãy <b>khởi động lại Claude Code</b> để áp dụng.</p>
+
+  <script src="setup.js"></script>
+</body>
+</html>

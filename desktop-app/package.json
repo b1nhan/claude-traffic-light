@@ -18,8 +18,11 @@
     "appId": "com.vuicoding.claudetrafficlight",
     "productName": "Claude Traffic Light",
     "win": {
-      "target": "nsis",
+      "target": ["portable"],
       "icon": "assets/green-256.png"
-    }
+    },
+    "extraResources": [
+      { "from": "assets/connect-claude.ps1", "to": "connect-claude.ps1" }
+    ]
   }
 }

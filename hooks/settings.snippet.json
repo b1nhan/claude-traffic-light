@@ -5,7 +5,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "curl -s -X POST http://localhost:7317/status -H \"Content-Type: application/json\" -d \"{\\\"status\\\":\\\"running\\\",\\\"message\\\":\\\"Claude dang xu ly\\\"}\" > /dev/null"
+            "shell": "powershell",
+            "command": "Invoke-RestMethod -Method Post -Uri http://localhost:7317/status -ContentType 'application/json' -Body '{\"status\":\"running\",\"message\":\"Claude dang xu ly\"}' -ErrorAction SilentlyContinue | Out-Null"
           }
         ]
       }
@@ -16,7 +17,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "curl -s -X POST http://localhost:7317/status -H \"Content-Type: application/json\" -d \"{\\\"status\\\":\\\"running\\\",\\\"message\\\":\\\"Dang chay tool\\\"}\" > /dev/null"
+            "shell": "powershell",
+            "command": "Invoke-RestMethod -Method Post -Uri http://localhost:7317/status -ContentType 'application/json' -Body '{\"status\":\"running\",\"message\":\"Dang chay tool\"}' -ErrorAction SilentlyContinue | Out-Null"
           }
         ]
       }
@@ -26,7 +28,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "curl -s -X POST http://localhost:7317/status -H \"Content-Type: application/json\" -d \"{\\\"status\\\":\\\"waiting\\\",\\\"message\\\":\\\"Claude Code dang cho xac nhan\\\"}\" > /dev/null"
+            "shell": "powershell",
+            "command": "Invoke-RestMethod -Method Post -Uri http://localhost:7317/status -ContentType 'application/json' -Body '{\"status\":\"waiting\",\"message\":\"Claude Code dang cho xac nhan\"}' -ErrorAction SilentlyContinue | Out-Null"
           }
         ]
       }
@@ -36,7 +39,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "curl -s -X POST http://localhost:7317/status -H \"Content-Type: application/json\" -d \"{\\\"status\\\":\\\"done\\\",\\\"message\\\":\\\"Task da xong\\\"}\" > /dev/null"
+            "shell": "powershell",
+            "command": "Invoke-RestMethod -Method Post -Uri http://localhost:7317/status -ContentType 'application/json' -Body '{\"status\":\"done\",\"message\":\"Task da xong\"}' -ErrorAction SilentlyContinue | Out-Null"
           }
         ]
       }
