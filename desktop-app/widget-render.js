@@ -6,7 +6,7 @@ const INFO = {
   waiting: { label: "CHỜ XÁC NHẬN", color: "#E08A72" },
   running: { label: "ĐANG CHẠY", color: "#D9A441" },
   done: { label: "XONG VIỆC", color: "#8FB57F" },
-  idle: { label: "CHƯA HOẠT ĐỘNG", color: "#7E776B" },
+  idle: { label: "ĐANG NGHỈ", color: "#7E776B" },
 };
 
 function hexToRgba(hex, alpha) {

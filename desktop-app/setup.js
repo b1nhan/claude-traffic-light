@@ -18,12 +18,12 @@ document.getElementById("btnConnect").addEventListener("click", async () => {
   dotEl.classList.add("hidden");
   const res = await window.trafficLight.connectClaude();
   if (res.success) {
-    resultEl.textContent = `Đã kết nối thành công! (${res.path})`;
+    resultEl.textContent = `Kết nối xong rồi! (${res.path})`;
     resultEl.style.color = "#5E7A50";
     dotEl.classList.remove("hidden");
     dotEl.style.background = "#7A9E6B";
   } else {
-    resultEl.textContent = `Không thành công (${res.reason || "lỗi không rõ"}).`;
+    resultEl.textContent = `Chưa được (${res.reason || "lỗi không rõ"}) — thử Cách 2 hoặc Cách 3 bên dưới nhé.`;
     resultEl.style.color = "#C6553F";
     dotEl.classList.remove("hidden");
     dotEl.style.background = "#C6553F";
@@ -40,7 +40,7 @@ document.getElementById("btnCopyCmd").addEventListener("click", async () => {
   const scriptPath = await window.trafficLight.getScriptPath();
   window.trafficLight.copyText(`powershell -ExecutionPolicy Bypass -File "${scriptPath}"`);
   const resultEl = document.getElementById("scriptResult");
-  resultEl.textContent = "Đã copy lệnh, dán vào PowerShell rồi Enter.";
+  resultEl.textContent = "Copy xong rồi, dán vào PowerShell rồi Enter là chạy.";
   setTimeout(() => resultEl.textContent = "", 3000);
 });
 
@@ -48,7 +48,7 @@ document.getElementById("btnCopyCmd").addEventListener("click", async () => {
 document.getElementById("btnCopyPrompt").addEventListener("click", () => {
   window.trafficLight.copyText(promptTextarea.value);
   const resultEl = document.getElementById("promptResult");
-  resultEl.textContent = "Đã copy, dán vào Claude Code.";
+  resultEl.textContent = "Copy xong rồi, dán vào Claude Code là được.";
   setTimeout(() => resultEl.textContent = "", 3000);
 });
 
@@ -82,12 +82,12 @@ const INFO = {
   waiting: { label: "CHỜ XÁC NHẬN", color: "#E08A72" },
   running: { label: "ĐANG CHẠY", color: "#D9A441" },
   done: { label: "XONG VIỆC", color: "#8FB57F" },
-  idle: { label: "CHƯA HOẠT ĐỘNG", color: "#7E776B" },
+  idle: { label: "ĐANG NGHỈ", color: "#7E776B" },
 };
 const MODE_DESCS = [
-  "Đầy đủ — 3 ô đèn kèm nhãn trạng thái. Đây chính là widget sẽ hiện trên desktop.",
-  "Gọn — 3 ô đèn, không chữ. Rê chuột lên widget vẫn hiện tooltip trạng thái.",
-  "Tối giản — 1 ô đèn duy nhất đổi màu, chiếm ít chỗ nhất khi làm việc."
+  "3 ô đèn kèm nhãn trạng thái. Đây là dáng widget sẽ nằm trên desktop của bạn.",
+  "Vẫn 3 ô đèn nhưng bỏ chữ cho gọn — rê chuột vào là thấy trạng thái ngay.",
+  "Chỉ còn 1 ô đèn đổi màu. Nhỏ gọn nhất, hợp lúc màn hình đang chật chỗ."
 ];
 
 let currentMode = 1;

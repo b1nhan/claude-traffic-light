@@ -12,25 +12,51 @@ const TRAY_ICONS = {
   done: path.join(__dirname, "assets", "green-16.png"),
 };
 
+// Nhãn tiếng Việt cho từng trạng thái — khớp với widget-render.js/setup.js để
+// người dùng không thấy key nội bộ (idle/running/...) lọt ra ngoài UI.
+const STATUS_LABELS = {
+  idle: "Đang nghỉ",
+  running: "Đang chạy",
+  waiting: "Chờ xác nhận",
+  done: "Xong việc",
+};
+
 let win;
 let setupWin;
 let tray;
 let currentState = { status: "idle", message: "Đang khởi động..." };
 let currentMode = 1;
-let windowVisible = true;
 let widgetSettings = { alwaysOnTop: true, opacity: 1, position: "top-right" };
 
 // 9 vị trí neo theo góc màn hình, dùng workArea để né taskbar.
 const POSITIONS = {
   "top-left": (wa, w, h) => ({ x: wa.x + 20, y: wa.y + 20 }),
-  "top-center": (wa, w, h) => ({ x: wa.x + Math.round((wa.width - w) / 2), y: wa.y + 20 }),
+  "top-center": (wa, w, h) => ({
+    x: wa.x + Math.round((wa.width - w) / 2),
+    y: wa.y + 20,
+  }),
   "top-right": (wa, w, h) => ({ x: wa.x + wa.width - w - 20, y: wa.y + 20 }),
-  "middle-left": (wa, w, h) => ({ x: wa.x + 20, y: wa.y + Math.round((wa.height - h) / 2) }),
-  "middle-center": (wa, w, h) => ({ x: wa.x + Math.round((wa.width - w) / 2), y: wa.y + Math.round((wa.height - h) / 2) }),
-  "middle-right": (wa, w, h) => ({ x: wa.x + wa.width - w - 20, y: wa.y + Math.round((wa.height - h) / 2) }),
+  "middle-left": (wa, w, h) => ({
+    x: wa.x + 20,
+    y: wa.y + Math.round((wa.height - h) / 2),
+  }),
+  "middle-center": (wa, w, h) => ({
+    x: wa.x + Math.round((wa.width - w) / 2),
+    y: wa.y + Math.round((wa.height - h) / 2),
+  }),
+  "middle-right": (wa, w, h) => ({
+    x: wa.x + wa.width - w - 20,
+    y: wa.y + Math.round((wa.height - h) / 2),
+  }),
   "bottom-left": (wa, w, h) => ({ x: wa.x + 20, y: wa.y + wa.height - h - 20 }),
-  "bottom-center": (wa, w, h) => ({ x: wa.x + Math.round((wa.width - w) / 2), y: wa.y + wa.height - h - 20 }),
-  "bottom-right": (wa, w, h) => ({ x: wa.x + wa.width - w - 20, y: wa.y + wa.height - h - 20 }),
+  "bottom-center": (wa, w, h) => ({
+    x: wa.x + Math.round((wa.width - w) / 2),
+    y: wa.y + wa.height - h - 20,
+  }),
+  "bottom-right": (wa, w, h) => ({
+    x: wa.x + wa.width - w - 20,
+    y: wa.y + wa.height - h - 20,
+  }),
 };
 
 // Nền luôn mờ hơn đèn 20% (sàn 0%) — 2 kênh opacity riêng, chỉ đèn mới đạt 100%.
@@ -48,6 +74,21 @@ function applyWindowPosition() {
   const fn = POSITIONS[widgetSettings.position] || POSITIONS["top-right"];
   const { x, y } = fn(wa, w, h);
   win.setPosition(Math.round(x), Math.round(y));
+}
+
+// Dùng chung cho IPC "set-mode" (từ setup.html) và menu tray (Mode 1/2/3).
+function applyMode(mode) {
+  currentMode = mode;
+  if (!win || win.isDestroyed()) return;
+  if (mode === 1) win.setSize(160, 180);
+  else if (mode === 2) win.setSize(60, 140);
+  else if (mode === 3) win.setSize(60, 60);
+  applyWindowPosition();
+  win.webContents.send("mode-update", mode);
+}
+
+function showWidget() {
+  if (win) win.show();
 }
 
 if (!app.requestSingleInstanceLock()) {
@@ -90,7 +131,6 @@ if (!app.requestSingleInstanceLock()) {
       if (!app.isQuiting) {
         e.preventDefault();
         win.hide();
-        windowVisible = false;
       }
     });
   }
@@ -126,24 +166,49 @@ if (!app.requestSingleInstanceLock()) {
   function updateTrayMenu() {
     const contextMenu = Menu.buildFromTemplate([
       {
-        label: windowVisible ? "Ẩn cửa sổ nổi" : "Hiện cửa sổ nổi",
+        label: "Mode 1",
+        type: "radio",
+        checked: currentMode === 1,
         click: () => {
-          if (windowVisible) {
-            win.hide();
-          } else {
-            win.show();
-          }
-          windowVisible = !windowVisible;
+          applyMode(1);
+          showWidget();
           updateTrayMenu();
         },
       },
       {
-        label: "Hướng dẫn / Cài đặt",
+        label: "Mode 2",
+        type: "radio",
+        checked: currentMode === 2,
+        click: () => {
+          applyMode(2);
+          showWidget();
+          updateTrayMenu();
+        },
+      },
+      {
+        label: "Mode 3",
+        type: "radio",
+        checked: currentMode === 3,
+        click: () => {
+          applyMode(3);
+          showWidget();
+          updateTrayMenu();
+        },
+      },
+      {
+        label: "Ẩn",
+        click: () => {
+          if (win) win.hide();
+        },
+      },
+      { type: "separator" },
+      {
+        label: "Home",
         click: () => createSetupWindow(),
       },
       { type: "separator" },
       {
-        label: `Trạng thái: ${currentState.status}`,
+        label: `Trạng thái: ${STATUS_LABELS[currentState.status] || STATUS_LABELS.idle}`,
         enabled: false,
       },
       { type: "separator" },
@@ -156,7 +221,9 @@ if (!app.requestSingleInstanceLock()) {
       },
     ]);
     tray.setContextMenu(contextMenu);
-    tray.setToolTip(`Claude Traffic Light — ${currentState.status}`);
+    tray.setToolTip(
+      `Claude Traffic Light — ${STATUS_LABELS[currentState.status] || STATUS_LABELS.idle}`,
+    );
   }
 
   function applyState(state) {
@@ -234,18 +301,8 @@ if (!app.requestSingleInstanceLock()) {
   );
 
   ipcMain.on("set-mode", (event, mode) => {
-    currentMode = mode;
-    if (win && !win.isDestroyed()) {
-      if (mode === 1) {
-        win.setSize(160, 180);
-      } else if (mode === 2) {
-        win.setSize(60, 140);
-      } else if (mode === 3) {
-        win.setSize(60, 60);
-      }
-      applyWindowPosition();
-      win.webContents.send("mode-update", mode);
-    }
+    applyMode(mode);
+    updateTrayMenu();
   });
 
   ipcMain.on("request-current-state", (event) => {
@@ -282,7 +339,7 @@ if (!app.requestSingleInstanceLock()) {
     statusServer.emitter.on("error", (err) => {
       const msg =
         err.code === "EADDRINUSE"
-          ? `Cổng ${PORT} đang được dùng bởi ứng dụng khác`
+          ? `Cổng ${PORT} đang bị app khác chiếm mất rồi — tắt app đó đi rồi mở lại Claude Traffic Light nhé`
           : `Lỗi server: ${err.message}`;
       applyState({ status: "idle", message: msg, updatedAt: Date.now() });
     });
