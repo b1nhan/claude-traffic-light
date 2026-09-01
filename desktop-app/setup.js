@@ -129,13 +129,13 @@ document.getElementById("tab-mode-3").addEventListener('click', () => updateMode
 // Preview Status Update Logic (Test buttons)
 function updatePreviewStatus(status) {
   currentPreviewStatus = status;
-  const info = INFO[status];
-  
+  const info = INFO[status] || INFO.idle;
+
   // Mode 1 updates
   document.getElementById("m1-dot-red").style.background = status === "waiting" ? ON.red : OFF.red;
   document.getElementById("m1-dot-yellow").style.background = status === "running" ? ON.yellow : OFF.yellow;
   document.getElementById("m1-dot-green").style.background = status === "done" ? ON.green : OFF.green;
-  
+
   const m1LabelBox = document.getElementById("m1-label-box");
   const m1Label = document.getElementById("m1-label");
   m1LabelBox.style.borderColor = info.color;
@@ -146,20 +146,84 @@ function updatePreviewStatus(status) {
   document.getElementById("m2-dot-red").style.background = status === "waiting" ? ON.red : OFF.red;
   document.getElementById("m2-dot-yellow").style.background = status === "running" ? ON.yellow : OFF.yellow;
   document.getElementById("m2-dot-green").style.background = status === "done" ? ON.green : OFF.green;
-  
+
   // Mode 3 updates
   const activeColor = status === "waiting" ? ON.red : (status === "running" ? ON.yellow : (status === "done" ? ON.green : "#5C564C"));
   document.getElementById("m3-dot").style.background = activeColor;
+
+  // Test button selected state
+  document.getElementById("test-red").classList.toggle("selected", status === "waiting");
+  document.getElementById("test-yellow").classList.toggle("selected", status === "running");
+  document.getElementById("test-green").classList.toggle("selected", status === "done");
 }
 
 document.getElementById("test-red").addEventListener('click', () => updatePreviewStatus('waiting'));
 document.getElementById("test-yellow").addEventListener('click', () => updatePreviewStatus('running'));
 document.getElementById("test-green").addEventListener('click', () => updatePreviewStatus('done'));
-document.getElementById("test-idle").addEventListener('click', () => updatePreviewStatus('idle'));
 
-// Sync initial mode from backend if possible
-if (window.trafficLight && window.trafficLight.requestCurrentState) {
-    window.trafficLight.onModeUpdate && window.trafficLight.onModeUpdate((mode) => {
-        updateMode(mode);
-    });
+// Nút thứ 4: đồng bộ preview về đúng trạng thái thật hiện tại của Claude
+document.getElementById("test-sync").addEventListener('click', () => {
+  window.trafficLight && window.trafficLight.requestCurrentState();
+});
+
+// Widget Settings — Luôn nổi / Độ mờ / Vị trí
+const toggleTopEl = document.getElementById("toggleTop");
+const opacityGridEl = document.getElementById("opacityGrid");
+const opacityLabelEl = document.getElementById("opacityLabel");
+const positionGridEl = document.getElementById("positionGrid");
+
+function setToggleUI(on) {
+  toggleTopEl.classList.toggle("on", on);
+  toggleTopEl.classList.toggle("off", !on);
+}
+
+function setOpacityUI(opacity) {
+  const step = Math.round((opacity || 1) * 5);
+  opacityGridEl.querySelectorAll(".op-cell").forEach((cell) => {
+    cell.classList.toggle("active", Number(cell.dataset.step) <= step);
+  });
+  opacityLabelEl.textContent = `${Math.round((opacity || 1) * 100)}%`;
+}
+
+function setPositionUI(position) {
+  positionGridEl.querySelectorAll(".pos-grid-cell").forEach((cell) => {
+    cell.classList.toggle("active", cell.dataset.pos === position);
+  });
+}
+
+toggleTopEl.addEventListener("click", () => {
+  const next = !toggleTopEl.classList.contains("on");
+  setToggleUI(next);
+  window.trafficLight && window.trafficLight.setAlwaysOnTop(next);
+});
+
+opacityGridEl.addEventListener("click", (e) => {
+  const cell = e.target.closest(".op-cell");
+  if (!cell) return;
+  const opacity = Number(cell.dataset.step) / 5;
+  setOpacityUI(opacity);
+  window.trafficLight && window.trafficLight.setOpacity(opacity);
+});
+
+positionGridEl.addEventListener("click", (e) => {
+  const cell = e.target.closest(".pos-grid-cell");
+  if (!cell) return;
+  setPositionUI(cell.dataset.pos);
+  window.trafficLight && window.trafficLight.setPosition(cell.dataset.pos);
+});
+
+// Sync initial mode + widget settings from backend
+if (window.trafficLight) {
+  window.trafficLight.onModeUpdate && window.trafficLight.onModeUpdate((mode) => {
+    updateMode(mode);
+  });
+  window.trafficLight.onStateUpdate && window.trafficLight.onStateUpdate((state) => {
+    updatePreviewStatus(state.status || "idle");
+  });
+  window.trafficLight.requestCurrentState && window.trafficLight.requestCurrentState();
+  window.trafficLight.getWidgetSettings && window.trafficLight.getWidgetSettings().then((settings) => {
+    setToggleUI(settings.alwaysOnTop);
+    setOpacityUI(settings.opacity);
+    setPositionUI(settings.position);
+  });
 }

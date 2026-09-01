@@ -18,6 +18,37 @@ let tray;
 let currentState = { status: "idle", message: "Đang khởi động..." };
 let currentMode = 1;
 let windowVisible = true;
+let widgetSettings = { alwaysOnTop: true, opacity: 1, position: "top-right" };
+
+// 9 vị trí neo theo góc màn hình, dùng workArea để né taskbar.
+const POSITIONS = {
+  "top-left": (wa, w, h) => ({ x: wa.x + 20, y: wa.y + 20 }),
+  "top-center": (wa, w, h) => ({ x: wa.x + Math.round((wa.width - w) / 2), y: wa.y + 20 }),
+  "top-right": (wa, w, h) => ({ x: wa.x + wa.width - w - 20, y: wa.y + 20 }),
+  "middle-left": (wa, w, h) => ({ x: wa.x + 20, y: wa.y + Math.round((wa.height - h) / 2) }),
+  "middle-center": (wa, w, h) => ({ x: wa.x + Math.round((wa.width - w) / 2), y: wa.y + Math.round((wa.height - h) / 2) }),
+  "middle-right": (wa, w, h) => ({ x: wa.x + wa.width - w - 20, y: wa.y + Math.round((wa.height - h) / 2) }),
+  "bottom-left": (wa, w, h) => ({ x: wa.x + 20, y: wa.y + wa.height - h - 20 }),
+  "bottom-center": (wa, w, h) => ({ x: wa.x + Math.round((wa.width - w) / 2), y: wa.y + wa.height - h - 20 }),
+  "bottom-right": (wa, w, h) => ({ x: wa.x + wa.width - w - 20, y: wa.y + wa.height - h - 20 }),
+};
+
+// Nền luôn mờ hơn đèn 20% (sàn 0%) — 2 kênh opacity riêng, chỉ đèn mới đạt 100%.
+function sendOpacityUpdate() {
+  if (!win || win.isDestroyed()) return;
+  const dot = widgetSettings.opacity;
+  const bg = Math.max(0, dot - 0.2);
+  win.webContents.send("opacity-update", { dot, bg });
+}
+
+function applyWindowPosition() {
+  if (!win || win.isDestroyed()) return;
+  const wa = screen.getPrimaryDisplay().workArea;
+  const [w, h] = win.getSize();
+  const fn = POSITIONS[widgetSettings.position] || POSITIONS["top-right"];
+  const { x, y } = fn(wa, w, h);
+  win.setPosition(Math.round(x), Math.round(y));
+}
 
 if (!app.requestSingleInstanceLock()) {
   app.quit();
@@ -33,12 +64,15 @@ if (!app.requestSingleInstanceLock()) {
     const { width } = screen.getPrimaryDisplay().workAreaSize;
 
     win = new BrowserWindow({
-      width: 110,
+      width: 160,
       height: 180,
-      x: width - 130,
+      x: width - 180,
       y: 20,
       frame: false,
       transparent: true,
+      // Windows/DWM cần backgroundColor rỗng tường minh cho layered window, nếu không
+      // đôi khi alpha compositing bị lệch khiến nội dung render mờ hơn opacity thật.
+      backgroundColor: "#00000000",
       resizable: false,
       alwaysOnTop: true,
       skipTaskbar: false,
@@ -48,8 +82,9 @@ if (!app.requestSingleInstanceLock()) {
       },
     });
 
-    win.setAlwaysOnTop(true, "screen-saver");
+    win.setAlwaysOnTop(widgetSettings.alwaysOnTop, "screen-saver");
     win.loadFile("index.html");
+    win.webContents.on("did-finish-load", sendOpacityUpdate);
 
     win.on("close", (e) => {
       if (!app.isQuiting) {
@@ -68,7 +103,7 @@ if (!app.requestSingleInstanceLock()) {
     }
     setupWin = new BrowserWindow({
       width: 1200,
-      height: 680,
+      height: 800,
       resizable: false,
       title: "Claude Traffic Light — Hướng dẫn & Cài đặt",
       webPreferences: {
@@ -145,7 +180,7 @@ if (!app.requestSingleInstanceLock()) {
       for (const block of blocks) {
         const newCommand = block.hooks[0].command;
         const alreadyPresent = existing.some((b) =>
-          (b.hooks || []).some((h) => h.command === newCommand)
+          (b.hooks || []).some((h) => h.command === newCommand),
         );
         if (!alreadyPresent) existing.push(block);
       }
@@ -173,7 +208,11 @@ if (!app.requestSingleInstanceLock()) {
           try {
             settings = JSON.parse(raw);
           } catch (e) {
-            return { success: false, reason: "invalid_json", path: settingsPath };
+            return {
+              success: false,
+              reason: "invalid_json",
+              path: settingsPath,
+            };
           }
         }
       }
@@ -181,23 +220,30 @@ if (!app.requestSingleInstanceLock()) {
       fs.writeFileSync(settingsPath, JSON.stringify(merged, null, 2), "utf8");
       return { success: true, path: settingsPath };
     } catch (e) {
-      return { success: false, reason: e.code || e.message, path: settingsPath };
+      return {
+        success: false,
+        reason: e.code || e.message,
+        path: settingsPath,
+      };
     }
   });
 
   ipcMain.handle("get-script-path", () => getScriptPath());
-  ipcMain.handle("get-hooks-json", () => JSON.stringify({ hooks: HOOKS }, null, 2));
+  ipcMain.handle("get-hooks-json", () =>
+    JSON.stringify({ hooks: HOOKS }, null, 2),
+  );
 
   ipcMain.on("set-mode", (event, mode) => {
     currentMode = mode;
     if (win && !win.isDestroyed()) {
       if (mode === 1) {
-        win.setSize(110, 180);
+        win.setSize(160, 180);
       } else if (mode === 2) {
         win.setSize(60, 140);
       } else if (mode === 3) {
         win.setSize(60, 60);
       }
+      applyWindowPosition();
       win.webContents.send("mode-update", mode);
     }
   });
@@ -205,6 +251,26 @@ if (!app.requestSingleInstanceLock()) {
   ipcMain.on("request-current-state", (event) => {
     event.reply("state-update", currentState);
     event.reply("mode-update", currentMode);
+  });
+
+  ipcMain.handle("get-widget-settings", () => widgetSettings);
+
+  ipcMain.on("set-always-on-top", (event, value) => {
+    widgetSettings.alwaysOnTop = !!value;
+    if (win && !win.isDestroyed()) {
+      win.setAlwaysOnTop(widgetSettings.alwaysOnTop, "screen-saver");
+    }
+  });
+
+  ipcMain.on("set-opacity", (event, value) => {
+    widgetSettings.opacity = Math.min(1, Math.max(0.2, Number(value) || 1));
+    sendOpacityUpdate();
+  });
+
+  ipcMain.on("set-position", (event, position) => {
+    if (!POSITIONS[position]) return;
+    widgetSettings.position = position;
+    applyWindowPosition();
   });
 
   app.whenReady().then(() => {

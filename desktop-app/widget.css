@@ -1,0 +1,62 @@
+/* Style cụm đèn giao thông + nhãn trạng thái — dùng chung giữa index.html (widget thật,
+   chạy trong Electron) và preview.html (sandbox chỉnh opacity bằng Live Server).
+   Sửa file này thì cả 2 nơi đều thay đổi theo, không sợ lệch nhau. */
+
+.hidden {
+  display: none !important;
+}
+
+.layout-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.container {
+  border: 3px solid rgba(20, 20, 19, var(--bg-alpha, 1));
+  background: rgba(26, 25, 23, var(--bg-alpha, 1));
+  box-shadow: 5px 5px 0 rgba(0, 0, 0, calc(0.3 * var(--bg-alpha, 1)));
+  padding: 10px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  align-items: center;
+}
+
+.dot {
+  width: 30px;
+  height: 30px;
+  box-shadow: inset -4px -4px 0 rgba(0, 0, 0, 0.22), inset 4px 4px 0 rgba(255, 255, 255, 0.14);
+  opacity: var(--dot-alpha, 1);
+  transition: background 0.2s ease;
+}
+
+/* Dot Off Colors */
+.dot-red { background: #4A3B37; }
+.dot-yellow { background: #463D2C; }
+.dot-green { background: #334030; }
+
+/* Dot On Colors */
+.dot-red.on { background: #C6553F; }
+.dot-yellow.on { background: #D9A441; }
+.dot-green.on { background: #7A9E6B; }
+
+/* Mode 1 specific */
+.label-container {
+  border: 2px solid rgba(52, 48, 42, var(--bg-alpha, 1));
+  background: rgba(13, 12, 11, var(--bg-alpha, 1));
+  padding: 7px 14px;
+  text-align: center;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.status-label {
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  font-size: 10.5px;
+  letter-spacing: .5px;
+  white-space: nowrap;
+}

@@ -15,9 +15,18 @@ contextBridge.exposeInMainWorld("trafficLight", {
   },
   setMode: (mode) => ipcRenderer.send("set-mode", mode),
 
+  onOpacityUpdate: (callback) => {
+    ipcRenderer.on("opacity-update", (_event, data) => callback(data));
+  },
+
   connectClaude: () => ipcRenderer.invoke("connect-claude"),
   getScriptPath: () => ipcRenderer.invoke("get-script-path"),
   getHooksJson: () => ipcRenderer.invoke("get-hooks-json"),
+
+  getWidgetSettings: () => ipcRenderer.invoke("get-widget-settings"),
+  setAlwaysOnTop: (value) => ipcRenderer.send("set-always-on-top", value),
+  setOpacity: (value) => ipcRenderer.send("set-opacity", value),
+  setPosition: (position) => ipcRenderer.send("set-position", position),
   openPath: (p) => shell.openPath(p),
   showItemInFolder: (p) => shell.showItemInFolder(p),
   copyText: (text) => clipboard.writeText(text),

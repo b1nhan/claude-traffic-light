@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Widget Opacity Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="widget.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: #2B2723;
+      color: #EFEBE3;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sân khấu hiển thị widget — nền tối giống desktop thật để đánh giá opacity đúng mắt */
+    #stage {
+      position: relative;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background:
+        linear-gradient(45deg, #1a1a1a 25%, transparent 25%),
+        linear-gradient(-45deg, #1a1a1a 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #1a1a1a 75%),
+        linear-gradient(-45deg, transparent 75%, #1a1a1a 75%);
+      background-size: 24px 24px;
+      background-position: 0 0, 0 12px, 12px -12px, -12px 0px;
+      background-color: #3a3530;
+    }
+
+    /* Nền video làm bài test thực tế hơn checkerboard — có thể tắt/bật */
+    #videoBg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    #widgetWrap {
+      position: relative;
+      z-index: 1;
+    }
+
+    #panel {
+      width: 320px;
+      flex: none;
+      padding: 20px;
+      background: #1E1B18;
+      border-left: 1px solid #3a352f;
+      overflow-y: auto;
+    }
+
+    h1 { font-size: 14px; margin: 0 0 4px; }
+    .hint { font-size: 11px; color: #948C7E; line-height: 1.5; margin-bottom: 18px; }
+
+    .field { margin-bottom: 18px; }
+    .field label { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+    .field label span.val { font-family: ui-monospace, Menlo, monospace; color: #D9A441; }
+    .field input[type="range"] { width: 100%; }
+
+    .row { display: flex; gap: 6px; margin-bottom: 18px; flex-wrap: wrap; }
+    .row button {
+      flex: 1 1 auto;
+      min-width: 60px;
+      padding: 6px 8px;
+      border: 2px solid #3a352f;
+      background: #26221E;
+      color: #EFEBE3;
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 10.5px;
+      cursor: pointer;
+    }
+    .row button.active { background: #C6553F; border-color: #C6553F; color: #fff; }
+
+    /* Cấu hình riêng từng mức trong 5 mức 20/40/60/80/100 — mỗi mức 1 cặp opacity (đèn/nền) */
+    .level-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border: 1px solid #3a352f;
+      margin-bottom: 4px;
+      background: #26221E;
+    }
+    .level-row.active { border-color: #D9A441; background: #2E2A20; }
+    .level-btn {
+      flex: none;
+      width: 46px;
+      padding: 5px 0;
+      text-align: center;
+      border: 1px solid #3a352f;
+      background: #1E1B18;
+      color: #EFEBE3;
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 10.5px;
+      cursor: pointer;
+    }
+    .level-row.active .level-btn { background: #D9A441; border-color: #D9A441; color: #1E1B18; }
+    .level-row label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 10.5px;
+      color: #B7AF9F;
+      flex: 1;
+    }
+    .level-row input[type="number"] {
+      width: 46px;
+      background: #1E1B18;
+      border: 1px solid #3a352f;
+      color: #EFEBE3;
+      font-family: ui-monospace, Menlo, monospace;
+      font-size: 11px;
+      padding: 3px 4px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="stage">
+    <iframe id="videoBg"
+      src="https://www.youtube.com/embed/xAwB9lQnxAY?si=_JLNHG2FuqpNGkFE&controls=0&autoplay=1&mute=1&loop=1&playlist=xAwB9lQnxAY"
+      title="YouTube video player" frameborder="0"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+    <!-- Cấu trúc y hệt index.html để widget.css/widget-render.js dùng chung, không lệch preview -->
+    <div id="widgetWrap">
+      <div id="layout-full" class="layout-col">
+        <div id="dots-box" class="container">
+          <div id="dot-red" class="dot dot-red"></div>
+          <div id="dot-yellow" class="dot dot-yellow"></div>
+          <div id="dot-green" class="dot dot-green"></div>
+        </div>
+        <div id="label-box" class="label-container">
+          <div id="status-label" class="status-label">CHƯA HOẠT ĐỘNG</div>
+        </div>
+      </div>
+
+      <div id="layout-minimal" class="container hidden" style="padding: 8px;">
+        <div id="dot-minimal" class="dot dot-red"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="panel">
+    <h1>Widget Opacity Preview</h1>
+    <div class="hint">
+      Mở file này bằng Live Server để chỉnh trực tiếp, không cần build lại app Electron.
+      Sửa <code>widget.css</code> / <code>widget-render.js</code> ở đây sẽ áp dụng luôn cho
+      widget thật (index.html dùng chung 2 file này).
+    </div>
+
+    <div class="field">
+      <label style="cursor:pointer">
+        <span>Nền video (YouTube)</span>
+        <input type="checkbox" id="videoToggle" checked>
+      </label>
+    </div>
+
+    <div class="row" id="modeRow">
+      <button data-mode="1" class="active">MODE 1</button>
+      <button data-mode="2">MODE 2</button>
+      <button data-mode="3">MODE 3</button>
+    </div>
+
+    <div class="row" id="statusRow">
+      <button data-status="waiting" class="active">ĐỎ</button>
+      <button data-status="running">VÀNG</button>
+      <button data-status="done">XANH</button>
+      <button data-status="idle">NGHỈ</button>
+    </div>
+
+    <div class="field">
+      <label>5 mức opacity — mỗi mức tự chỉnh riêng đèn/nền</label>
+      <div class="hint" style="margin-bottom:8px">
+        Bấm vào tên mức để xem trước. Sửa số "Đèn"/"Nền" của mức đang chọn để widget cập nhật
+        ngay. Lưu tự động vào trình duyệt (localStorage), không mất khi tải lại trang.
+      </div>
+      <div id="levelConfig"></div>
+    </div>
+  </div>
+
+  <script src="widget-render.js"></script>
+  <script src="preview.js"></script>
+</body>
+
+</html>

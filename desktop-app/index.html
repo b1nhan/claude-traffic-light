@@ -6,6 +6,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="widget.css">
   <style>
     html,
     body {
@@ -22,81 +23,18 @@
       width: 100vw;
       height: 100vh;
     }
-
-    .hidden {
-      display: none !important;
-    }
-
-    /* Mode 1 & 2 Base Container */
-    .container {
-      border: 3px solid #141413;
-      background: #1A1917;
-      box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.3);
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-      align-items: center;
-    }
-
-    .dot {
-      width: 30px;
-      height: 30px;
-      box-shadow: inset -4px -4px 0 rgba(0, 0, 0, 0.22), inset 4px 4px 0 rgba(255, 255, 255, 0.14);
-      transition: background 0.2s ease;
-    }
-
-    /* Dot Off Colors */
-    .dot-red {
-      background: #4A3B37;
-    }
-
-    .dot-yellow {
-      background: #463D2C;
-    }
-
-    .dot-green {
-      background: #334030;
-    }
-
-    /* Dot On Colors */
-    .dot-red.on {
-      background: #C6553F;
-    }
-
-    .dot-yellow.on {
-      background: #D9A441;
-    }
-
-    .dot-green.on {
-      background: #7A9E6B;
-    }
-
-    /* Mode 1 specific */
-    .label-container {
-      border-top: 2px solid #34302A;
-      padding-top: 7px;
-      margin-top: 2px;
-      width: 100%;
-      text-align: center;
-    }
-
-    .status-label {
-      font-family: 'Inter', sans-serif;
-      font-weight: 800;
-      font-size: 10px;
-      white-space: nowrap;
-    }
   </style>
 </head>
 
 <body>
 
   <!-- Mode 1 & 2 Layout -->
-  <div id="layout-full" class="container">
-    <div id="dot-red" class="dot dot-red"></div>
-    <div id="dot-yellow" class="dot dot-yellow"></div>
-    <div id="dot-green" class="dot dot-green"></div>
+  <div id="layout-full" class="layout-col">
+    <div id="dots-box" class="container">
+      <div id="dot-red" class="dot dot-red"></div>
+      <div id="dot-yellow" class="dot dot-yellow"></div>
+      <div id="dot-green" class="dot dot-green"></div>
+    </div>
 
     <div id="label-box" class="label-container">
       <div id="status-label" class="status-label">CHƯA HOẠT ĐỘNG</div>
@@ -108,6 +46,7 @@
     <div id="dot-minimal" class="dot dot-red"></div>
   </div>
 
+  <script src="widget-render.js"></script>
   <script src="renderer.js"></script>
 </body>
 
