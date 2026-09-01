@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Tray, Menu, screen, ipcMain } = require("electron");
+const { app, BrowserWindow, Tray, Menu, screen, ipcMain, shell } = require("electron");
 const path = require("path");
 const fs = require("fs");
 const os = require("os");
@@ -153,6 +153,14 @@ if (!app.requestSingleInstanceLock()) {
     });
     setupWin.setMenuBarVisibility(false);
     setupWin.loadFile("setup.html");
+    // Link footer (GitHub, report bug) là <a href> thật — chặn điều hướng trong
+    // cửa sổ app, mở bằng trình duyệt mặc định thay vào đó.
+    setupWin.webContents.on("will-navigate", (e, url) => {
+      if (/^https?:\/\//.test(url)) {
+        e.preventDefault();
+        shell.openExternal(url);
+      }
+    });
     setupWin.on("closed", () => {
       setupWin = null;
     });
