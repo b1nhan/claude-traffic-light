@@ -1,101 +1,301 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Claude Traffic Light — Cài đặt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-  :root { color-scheme: dark; }
-  * { box-sizing: border-box; }
   body {
     margin: 0;
-    font-family: -apple-system, "Segoe UI", Arial, sans-serif;
-    background: #1c1c20;
-    color: #e6e6ea;
-    padding: 20px 24px 28px;
+    background: #EFEBE3;
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
   }
-  h1 { font-size: 18px; margin: 0 0 4px; }
-  .sub { color: #9a9aa4; font-size: 13px; margin: 0 0 18px; line-height: 1.5; }
-  .dots { display: flex; gap: 8px; margin-bottom: 18px; }
-  .dot { width: 14px; height: 14px; border-radius: 50%; }
-  .dot.red { background: #e63228; box-shadow: 0 0 10px 1px #e6322888; }
-  .dot.yellow { background: #f5b414; box-shadow: 0 0 10px 1px #f5b41488; }
-  .dot.green { background: #28b446; box-shadow: 0 0 10px 1px #28b44688; }
-  section {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 10px;
-    padding: 14px 16px;
-    margin-bottom: 14px;
+  a { color: #C6553F; text-decoration: none; }
+  a:hover { color: #A8412F; }
+  @keyframes blip { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+  
+  /* Generic classes for JS toggles */
+  .hidden { display: none !important; }
+  .accordion-content { padding: 14px; border-top: 1px solid #EFE9DE; }
+  .hover-bg-F8EDE5:hover { background: #F8EDE5 !important; }
+  .hover-bg-F3EFE7:hover { background: #F3EFE7 !important; }
+  .hover-bg-A8412F:hover { background: #A8412F !important; }
+  
+  .btn-active:active {
+    box-shadow: 0 0 0 #141413 !important;
+    transform: translate(3px, 3px);
   }
-  section h2 { font-size: 14px; margin: 0 0 8px; }
-  section p { font-size: 12.5px; color: #b9b9c0; margin: 0 0 10px; line-height: 1.5; }
-  button {
-    background: #3a6df0;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    padding: 8px 14px;
-    font-size: 12.5px;
+  
+  /* Colors */
+  .text-red { color: #C6553F; }
+  .text-yellow { color: #D9A441; }
+  .text-green { color: #7A9E6B; }
+  .bg-red { background: #C6553F; }
+  .bg-yellow { background: #D9A441; }
+  .bg-green { background: #7A9E6B; }
+  .bg-off-red { background: #4A3B37; }
+  .bg-off-yellow { background: #463D2C; }
+  .bg-off-green { background: #334030; }
+
+  /* Tab styles */
+  .tab-btn {
+    flex: 1;
+    padding: 9px 0;
+    text-align: center;
     cursor: pointer;
-    margin-right: 8px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 10px;
+    border-right: 1px solid #2B2723;
+    background: #1B1A18;
+    color: #7E776B;
   }
-  button.secondary { background: rgba(255,255,255,0.1); color: #e6e6ea; }
-  button:hover { filter: brightness(1.12); }
-  .result { margin-top: 10px; font-size: 12px; min-height: 14px; }
-  .result.ok { color: #4fd67a; }
-  .result.err { color: #ff6b6b; }
-  textarea {
-    width: 100%;
-    height: 130px;
-    background: #111114;
-    color: #d7d7dd;
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 6px;
-    font-size: 11px;
-    font-family: Consolas, monospace;
-    padding: 8px;
-    resize: vertical;
-    margin-top: 10px;
+  .tab-btn.active {
+    background: #C6553F;
+    color: #FFF8F0;
   }
-  code { background: rgba(255,255,255,0.08); padding: 1px 5px; border-radius: 4px; }
+  .tab-btn:last-child {
+    border-right: none;
+  }
+
+  .pos-grid-cell {
+    border: 1px solid #C9C1B4;
+    background: #EFEBE3;
+    cursor: pointer;
+  }
+  .pos-grid-cell:hover { background: #D9A441 !important; }
+  .pos-grid-cell.active { background: #C6553F !important; }
+  
+  .op-cell {
+    flex: 1;
+    height: 18px;
+    border: 1px solid #C9C1B4;
+    background: #EFEBE3;
+    cursor: pointer;
+  }
+  .op-cell.active { background: #141413; }
 </style>
 </head>
 <body>
-  <h1>Claude Traffic Light</h1>
-  <p class="sub">Đèn giao thông ảo cho Claude Code — chạy ngay trên máy bạn, không cần cài server rời.<br />
-  🔴 đỏ = Claude đang chờ xác nhận &nbsp;·&nbsp; 🟡 vàng = đang chạy &nbsp;·&nbsp; 🟢 xanh = xong việc.</p>
-  <div class="dots">
-    <div class="dot red"></div>
-    <div class="dot yellow"></div>
-    <div class="dot green"></div>
+
+<div style="width:100vw; height:100vh; display:flex; flex-direction:column; overflow:hidden;">
+  <!-- Title Bar -->
+  <div style="height:38px; flex:none; background:#F4F0E8; border-bottom:1px solid #E3DDD2; display:flex; align-items:center; padding:0 12px; gap:10px; -webkit-app-region: drag;">
+    <div style="display:flex; gap:4px">
+      <div style="width:10px; height:10px; background:#C6553F; border-radius:50%"></div>
+      <div style="width:10px; height:10px; background:#D9A441; border-radius:50%"></div>
+      <div style="width:10px; height:10px; background:#7A9E6B; border-radius:50%"></div>
+    </div>
+    <div style="font-size:12px; font-weight:600; color:#6B655B; letter-spacing:.2px">Claude Traffic Light — Cài đặt</div>
   </div>
 
-  <section>
-    <h2>Cách 1 — Kết nối tự động (khuyên dùng)</h2>
-    <p>Bấm nút bên dưới để tự động thêm cấu hình vào Claude Code. Chỉ cần làm 1 lần duy nhất.</p>
-    <button id="btnConnect">Connect to Claude</button>
-    <div id="connectResult" class="result"></div>
-  </section>
+  <div style="flex:1; display:flex; padding:16px; gap:16px; min-height:0; background:#FAF8F4;">
 
-  <section>
-    <h2>Cách 2 — Chạy script (nếu Cách 1 không được)</h2>
-    <p>Mở thư mục chứa <code>connect-claude.ps1</code>, chuột phải file đó → <b>Run with PowerShell</b>.
-    Hoặc copy lệnh rồi dán vào cửa sổ PowerShell.</p>
-    <button id="btnShowScript" class="secondary">Mở vị trí file</button>
-    <button id="btnCopyCmd" class="secondary">Copy lệnh chạy</button>
-    <div id="scriptResult" class="result"></div>
-  </section>
+    <!-- Left Column (Accordion + Info) -->
+    <div style="width:512px; flex:none; display:flex; flex-direction:column; gap:8px; min-height:0; overflow-y:auto; padding-right:8px;">
+      
+      <!-- Info Box -->
+      <div style="border:1px solid #E7E1D6; background:#FFFDF9; border-radius:10px; padding:14px; flex:none;">
+        <div style="display:flex; align-items:flex-start; gap:14px">
+          <div style="width:44px; height:60px; flex:none; border:3px solid #141413; background:#141413; padding:4px; display:flex; flex-direction:column; gap:3px;">
+            <div style="flex:1; background:#C6553F;"></div>
+            <div style="flex:1; background:#5C564C;"></div>
+            <div style="flex:1; background:#5C564C;"></div>
+          </div>
+          <div style="min-width:0">
+            <div style="font-size:16px; font-weight:700; letter-spacing:-.2px; color:#141413">Claude Traffic Light</div>
+            <div style="font-size:13px; color:#6B655B; line-height:1.5; margin-top:6px; text-wrap:pretty">Đèn giao thông ảo cho Claude Code — chạy ngay trên máy bạn, không cần cài server rời.</div>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:11px">
+          <div style="display:flex; align-items:center; gap:8px; border:1px solid #E7E1D6; border-radius:6px; padding:6px 8px">
+            <div style="width:12px; height:12px; background:#C6553F; box-shadow:inset -3px -3px 0 rgba(0,0,0,.18); border-radius:50%"></div>
+            <div style="font-size:11.5px; color:#4A453D; font-weight:600">Chờ xác nhận</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; border:1px solid #E7E1D6; border-radius:6px; padding:6px 8px">
+            <div style="width:12px; height:12px; background:#D9A441; box-shadow:inset -3px -3px 0 rgba(0,0,0,.18); border-radius:50%"></div>
+            <div style="font-size:11.5px; color:#4A453D; font-weight:600">Đang chạy</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px; border:1px solid #E7E1D6; border-radius:6px; padding:6px 8px">
+            <div style="width:12px; height:12px; background:#7A9E6B; box-shadow:inset -3px -3px 0 rgba(0,0,0,.18); border-radius:50%"></div>
+            <div style="font-size:11.5px; color:#4A453D; font-weight:600">Xong việc</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; margin-top:10px; padding-top:9px; border-top:2px dashed #E3DDD2">
+          <div style="width:9px; height:9px; background:#7A9E6B; animation:blip 1.6s steps(2,end) infinite; border-radius:50%"></div>
+          <div style="font-size:10.5px; font-weight:700; color:#4A453D; letter-spacing:.9px">SERVER LOCALHOST:7317 — ĐANG CHẠY</div>
+          <div style="flex:1"></div>
+          <div style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:10.5px; color:#A39B8D">v1.0.0</div>
+        </div>
+      </div>
 
-  <section>
-    <h2>Cách 3 — Nhờ Claude tự setup</h2>
-    <p>Copy đoạn dưới, dán vào cửa sổ Claude Code của bạn — Claude sẽ tự đọc và cấu hình giúp.</p>
-    <button id="btnCopyPrompt" class="secondary">Copy prompt</button>
-    <div id="promptResult" class="result"></div>
-    <textarea id="promptText" readonly></textarea>
-  </section>
+      <div style="font-size:10.5px; font-weight:700; letter-spacing:1.2px; color:#8C8579; margin-top:2px">NỐI CLAUDE CODE — CHỌN 1 TRONG 3 CÁCH</div>
 
-  <p class="sub">Sau khi làm xong 1 trong 3 cách, hãy <b>khởi động lại Claude Code</b> để áp dụng.</p>
+      <div style="display:flex; flex-direction:column; gap:7px">
+        <!-- Step 1 -->
+        <div style="border:1px solid #E7E1D6; background:#FFFDF9; border-radius:10px; overflow:hidden">
+          <div id="acc1-head" class="hover-bg-F8EDE5" style="display:flex; align-items:center; gap:11px; padding:11px 13px; cursor:pointer; background:#FBF2EC">
+            <div style="width:22px; height:22px; flex:none; background:#C6553F; display:flex; align-items:center; justify-content:center; font-family:'Inter', sans-serif; font-weight:800; font-size:11px; color:#fff;">1</div>
+            <div style="font-size:13.5px; font-weight:700; color:#141413">Kết nối tự động</div>
+            <div style="font-family:'Inter', sans-serif; font-weight:800; font-size:8.5px; color:#141413; background:#D9A441; padding:3px 6px; letter-spacing:.5px;">KHUYÊN DÙNG</div>
+            <div style="flex:1"></div>
+            <div id="acc1-icon" style="font-size:10px; color:#8C8579">▼</div>
+          </div>
+          <div id="acc1-body" class="accordion-content">
+            <div style="font-size:13px; color:#4A453D; line-height:1.55; text-wrap:pretty">Bấm nút bên dưới để tự động thêm cấu hình hook vào <span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12px; background:#F0EBE1; padding:2px 6px; border-radius:4px">~/.claude/settings.json</span>. Chỉ cần làm 1 lần duy nhất.</div>
+            <div style="display:flex; align-items:center; gap:10px; margin-top:12px">
+              <div id="btnConnect" class="btn-active hover-bg-A8412F" style="border:2px solid #141413; background:#C6553F; box-shadow:3px 3px 0 #141413; padding:9px 16px; cursor:pointer; font-family:'Inter', sans-serif; font-weight:800; font-size:11px; color:#FFF8F0; transition:all 0.1s;">CONNECT TO CLAUDE</div>
+              <div style="display:flex; align-items:center; gap:7px">
+                <div id="connectResultDot" class="hidden" style="width:10px; height:10px; background:#7A9E6B; border-radius:50%"></div>
+                <div id="connectResult" style="font-size:12px; color:#5E7A50; font-weight:600"></div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-  <script src="setup.js"></script>
+        <!-- Step 2 -->
+        <div style="border:1px solid #E7E1D6; background:#FFFDF9; border-radius:10px; overflow:hidden">
+          <div id="acc2-head" class="hover-bg-F3EFE7" style="display:flex; align-items:center; gap:11px; padding:10px 13px; cursor:pointer">
+            <div style="width:22px; height:22px; flex:none; background:#F0EBE1; border:2px solid #141413; display:flex; align-items:center; justify-content:center; font-family:'Inter', sans-serif; font-weight:800; font-size:11px; color:#141413;">2</div>
+            <div style="font-size:13.5px; font-weight:700; color:#141413">Chạy script PowerShell</div>
+            <div style="flex:1"></div>
+            <div id="acc2-icon" style="font-size:10px; color:#8C8579">▶</div>
+          </div>
+          <div id="acc2-body" class="accordion-content hidden">
+            <div style="font-size:13px; color:#4A453D; line-height:1.55; text-wrap:pretty">Mở thư mục chứa <span style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12px; background:#F0EBE1; padding:2px 6px; border-radius:4px">connect-claude.ps1</span>, chuột phải file đó → <b>Run với PowerShell</b>. Hoặc copy lệnh rồi dán vào cửa sổ PowerShell.</div>
+            <div style="display:flex; gap:9px; margin-top:12px; align-items:center;">
+              <div id="btnShowScript" class="btn-active hover-bg-F3EFE7" style="border:2px solid #141413; background:#FFFDF9; box-shadow:3px 3px 0 #E3DDD2; padding:8px 13px; cursor:pointer; font-family:'Inter', sans-serif; font-weight:800; font-size:10px; color:#141413;">MỞ VỊ TRÍ FILE</div>
+              <div id="btnCopyCmd" class="btn-active hover-bg-F3EFE7" style="border:2px solid #141413; background:#FFFDF9; box-shadow:3px 3px 0 #E3DDD2; padding:8px 13px; cursor:pointer; font-family:'Inter', sans-serif; font-weight:800; font-size:10px; color:#141413;">COPY LỆNH CHẠY</div>
+              <div id="scriptResult" style="font-size:12px; color:#5E7A50; font-weight:600; margin-left:8px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div style="border:1px solid #E7E1D6; background:#FFFDF9; border-radius:10px; overflow:hidden">
+          <div id="acc3-head" class="hover-bg-F3EFE7" style="display:flex; align-items:center; gap:11px; padding:10px 13px; cursor:pointer">
+            <div style="width:22px; height:22px; flex:none; background:#F0EBE1; border:2px solid #141413; display:flex; align-items:center; justify-content:center; font-family:'Inter', sans-serif; font-weight:800; font-size:11px; color:#141413;">3</div>
+            <div style="font-size:13.5px; font-weight:700; color:#141413">Nhờ Claude tự setup</div>
+            <div style="flex:1"></div>
+            <div id="acc3-icon" style="font-size:10px; color:#8C8579">▶</div>
+          </div>
+          <div id="acc3-body" class="accordion-content hidden">
+            <div style="font-size:13px; color:#4A453D; line-height:1.55; text-wrap:pretty">Copy đoạn prompt bên dưới, dán vào cửa sổ Claude Code của bạn — Claude sẽ tự đọc và cấu hình giúp.</div>
+            <textarea id="promptText" readonly style="width:100%; resize:none; margin-top:11px; border:1px solid #E7E1D6; background:#F7F3EA; border-radius:8px; padding:11px; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; line-height:1.65; color:#6B655B; height:74px; overflow:auto"></textarea>
+            <div style="display:flex; align-items:center; gap:12px;">
+              <div id="btnCopyPrompt" class="btn-active hover-bg-F3EFE7" style="border:2px solid #141413; background:#FFFDF9; box-shadow:3px 3px 0 #E3DDD2; padding:8px 13px; cursor:pointer; font-family:'Inter', sans-serif; font-weight:800; font-size:10px; color:#141413; display:inline-block; margin-top:11px;">COPY PROMPT</div>
+              <div id="promptResult" style="font-size:12px; color:#5E7A50; font-weight:600; margin-top:11px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="font-size:11.5px; color:#8C8579; line-height:1.4">Sau khi làm xong 1 trong 3 cách, hãy <b style="color:#4A453D">khởi động lại Claude Code</b> để áp dụng.</div>
+    </div>
+
+    <!-- Right Column (Preview & Settings) -->
+    <div style="flex:1; display:flex; flex-direction:column; gap:12px; min-height:0;">
+      
+      <!-- Preview Panel -->
+      <div style="border:1px solid #2B2723; background:#141413; border-radius:10px; overflow:hidden; box-shadow:0 3px 14px rgba(20,20,19,.14); flex:1; min-height:0; display:flex; flex-direction:column">
+        
+        <!-- Mode Tabs -->
+        <div style="display:flex; border-bottom:1px solid #2B2723; flex:none">
+          <div class="tab-btn active" id="tab-mode-1">MODE 1</div>
+          <div class="tab-btn" id="tab-mode-2">MODE 2</div>
+          <div class="tab-btn" id="tab-mode-3">MODE 3</div>
+        </div>
+        
+        <div style="padding:12px; display:flex; flex-direction:column; align-items:center; gap:11px; flex:1; min-height:0">
+          <div style="font-size:10px; font-weight:700; letter-spacing:1.1px; color:#7E776B; align-self:flex-start">TRẠNG THÁI HIỆN TẠI</div>
+
+          <!-- Mode Previews -->
+          <div style="flex:1; min-height:0; width:100%; display:flex; align-items:center; justify-content:center">
+            
+            <!-- Mode 1 Preview -->
+            <div id="preview-mode-1" style="display:flex; flex-direction:column; align-items:center; gap:9px">
+              <div style="display:flex; flex-direction:column; gap:6px; padding:8px; border:3px solid #34302A; background:#0D0C0B;">
+                <div id="m1-dot-red" style="width:38px; height:38px; background:#C6553F; box-shadow:inset -5px -5px 0 rgba(0,0,0,.22),inset 5px 5px 0 rgba(255,255,255,.16);"></div>
+                <div id="m1-dot-yellow" style="width:38px; height:38px; background:#463D2C; box-shadow:inset -5px -5px 0 rgba(0,0,0,.22),inset 5px 5px 0 rgba(255,255,255,.16);"></div>
+                <div id="m1-dot-green" style="width:38px; height:38px; background:#334030; box-shadow:inset -5px -5px 0 rgba(0,0,0,.22),inset 5px 5px 0 rgba(255,255,255,.16);"></div>
+              </div>
+              <div id="m1-label-box" style="border:2px solid #E08A72; background:#0D0C0B; padding:7px 14px; text-align:center;">
+                <div id="m1-label" style="font-family:'Inter', sans-serif; font-weight:800; font-size:10.5px; color:#E08A72; letter-spacing:.5px">CHỜ XÁC NHẬN</div>
+              </div>
+            </div>
+
+            <!-- Mode 2 Preview -->
+            <div id="preview-mode-2" class="hidden" style="display:flex; flex-direction:column; gap:6px; padding:8px; border:3px solid #34302A; background:#0D0C0B;">
+              <div id="m2-dot-red" style="width:38px; height:38px; background:#C6553F; box-shadow:inset -5px -5px 0 rgba(0,0,0,.22),inset 5px 5px 0 rgba(255,255,255,.16);"></div>
+              <div id="m2-dot-yellow" style="width:38px; height:38px; background:#463D2C; box-shadow:inset -5px -5px 0 rgba(0,0,0,.22),inset 5px 5px 0 rgba(255,255,255,.16);"></div>
+              <div id="m2-dot-green" style="width:38px; height:38px; background:#334030; box-shadow:inset -5px -5px 0 rgba(0,0,0,.22),inset 5px 5px 0 rgba(255,255,255,.16);"></div>
+            </div>
+
+            <!-- Mode 3 Preview -->
+            <div id="preview-mode-3" class="hidden" style="padding:8px; border:3px solid #34302A; background:#0D0C0B;">
+              <div id="m3-dot" style="width:38px; height:38px; background:#C6553F; box-shadow:inset -5px -5px 0 rgba(0,0,0,.22),inset 5px 5px 0 rgba(255,255,255,.16);"></div>
+            </div>
+
+          </div>
+
+          <div id="mode-desc" style="width:100%; font-size:11.5px; color:#7E776B; line-height:1.45; text-align:center; text-wrap:pretty; flex:none">Đầy đủ — 3 ô đèn kèm nhãn trạng thái. Đây chính là widget sẽ hiện trên desktop.</div>
+
+          <!-- Test Buttons -->
+          <div style="display:flex; gap:6px; width:100%; flex:none">
+            <div id="test-red" style="flex:1; border:2px solid #C6553F; background:#C6553F; padding:6px 0; text-align:center; cursor:pointer; font-family:'Inter', sans-serif; font-weight:800; font-size:10px; color:#fff;" class="hover-bg-A8412F">TEST ĐỎ</div>
+            <div id="test-yellow" style="flex:1; border:2px solid #D9A441; background:#241F1A; padding:6px 0; text-align:center; cursor:pointer; font-family:'Inter', sans-serif; font-weight:800; font-size:10px; color:#D9A441;">TEST VÀNG</div>
+            <div id="test-green" style="flex:1; border:2px solid #7A9E6B; background:#1B211A; padding:6px 0; text-align:center; cursor:pointer; font-family:'Inter', sans-serif; font-weight:800; font-size:10px; color:#8FB57F;">TEST XANH</div>
+            <div id="test-idle" style="flex: 1; border: 2px solid #7A9E6B; background: #1B211A; padding: 6px 0; text-align: center; cursor: pointer; font-family:'Inter', sans-serif; font-weight:800; font-size: 10px; color: #EBDEFF; border-color: #EBDEFF;">NGHỈ</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings Panel (Placeholders) -->
+      <div style="flex:none; border:1px solid #E7E1D6; background:#FFFDF9; border-radius:10px; padding:10px 14px; display:flex; align-items:center; gap:18px">
+        <div style="font-size:10px; font-weight:700; letter-spacing:1.1px; color:#8C8579; line-height:1.35; flex:none">CÀI ĐẶT<br>WIDGET</div>
+        <div style="width:1px; align-self:stretch; background:#EAE4D9; flex:none"></div>
+
+        <!-- Always on Top -->
+        <div style="display:flex; align-items:center; gap:9px; flex:none">
+          <div style="font-size:12.5px; color:#4A453D; font-weight:600">Luôn nổi</div>
+          <div id="toggleTop" style="width:44px; height:22px; border:2px solid #141413; background:#7A9E6B; cursor:pointer; display:flex; padding:2px; justify-content:flex-end;">
+            <div style="width:14px; height:14px; background:#141413;"></div>
+          </div>
+        </div>
+
+        <div style="width:1px; align-self:stretch; background:#EAE4D9; flex:none"></div>
+
+        <!-- Opacity -->
+        <div style="display:flex; align-items:center; gap:9px; flex:1; min-width:0">
+          <div style="font-size:12.5px; color:#4A453D; font-weight:600; flex:none">Độ mờ</div>
+          <div style="display:flex; gap:3px; flex:1; min-width:0">
+            <div class="op-cell active"></div><div class="op-cell active"></div><div class="op-cell active"></div><div class="op-cell active"></div><div class="op-cell"></div>
+          </div>
+          <div style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; color:#8C8579; flex:none; width:38px">92%</div>
+        </div>
+
+        <div style="width:1px; align-self:stretch; background:#EAE4D9; flex:none"></div>
+
+        <!-- Position -->
+        <div style="display:flex; align-items:center; gap:10px; flex:none">
+          <div style="font-size:12.5px; color:#4A453D; font-weight:600">Vị trí</div>
+          <div style="display:grid; grid-template-columns:repeat(3,15px); grid-template-rows:repeat(3,15px); gap:3px">
+            <div class="pos-grid-cell"></div><div class="pos-grid-cell"></div><div class="pos-grid-cell active"></div>
+            <div class="pos-grid-cell"></div><div class="pos-grid-cell"></div><div class="pos-grid-cell"></div>
+            <div class="pos-grid-cell"></div><div class="pos-grid-cell"></div><div class="pos-grid-cell"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="setup.js"></script>
 </body>
 </html>

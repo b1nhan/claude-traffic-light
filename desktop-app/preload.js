@@ -9,6 +9,11 @@ contextBridge.exposeInMainWorld("trafficLight", {
     ipcRenderer.on("state-update", (_event, state) => callback(state));
   },
   requestCurrentState: () => ipcRenderer.send("request-current-state"),
+  
+  onModeUpdate: (callback) => {
+    ipcRenderer.on("mode-update", (_event, mode) => callback(mode));
+  },
+  setMode: (mode) => ipcRenderer.send("set-mode", mode),
 
   connectClaude: () => ipcRenderer.invoke("connect-claude"),
   getScriptPath: () => ipcRenderer.invoke("get-script-path"),

@@ -16,6 +16,7 @@ let win;
 let setupWin;
 let tray;
 let currentState = { status: "idle", message: "Đang khởi động..." };
+let currentMode = 1;
 let windowVisible = true;
 
 if (!app.requestSingleInstanceLock()) {
@@ -32,9 +33,9 @@ if (!app.requestSingleInstanceLock()) {
     const { width } = screen.getPrimaryDisplay().workAreaSize;
 
     win = new BrowserWindow({
-      width: 230,
-      height: 92,
-      x: width - 250,
+      width: 110,
+      height: 180,
+      x: width - 130,
       y: 20,
       frame: false,
       transparent: true,
@@ -66,8 +67,9 @@ if (!app.requestSingleInstanceLock()) {
       return;
     }
     setupWin = new BrowserWindow({
-      width: 560,
-      height: 660,
+      width: 1200,
+      height: 680,
+      resizable: false,
       title: "Claude Traffic Light — Hướng dẫn & Cài đặt",
       webPreferences: {
         preload: path.join(__dirname, "preload.js"),
@@ -186,8 +188,23 @@ if (!app.requestSingleInstanceLock()) {
   ipcMain.handle("get-script-path", () => getScriptPath());
   ipcMain.handle("get-hooks-json", () => JSON.stringify({ hooks: HOOKS }, null, 2));
 
+  ipcMain.on("set-mode", (event, mode) => {
+    currentMode = mode;
+    if (win && !win.isDestroyed()) {
+      if (mode === 1) {
+        win.setSize(110, 180);
+      } else if (mode === 2) {
+        win.setSize(60, 140);
+      } else if (mode === 3) {
+        win.setSize(60, 60);
+      }
+      win.webContents.send("mode-update", mode);
+    }
+  });
+
   ipcMain.on("request-current-state", (event) => {
     event.reply("state-update", currentState);
+    event.reply("mode-update", currentMode);
   });
 
   app.whenReady().then(() => {

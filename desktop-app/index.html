@@ -1,73 +1,114 @@
 <!DOCTYPE html>
 <html lang="vi">
-<head>
-<meta charset="UTF-8" />
-<style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    background: transparent;
-    overflow: hidden;
-    -webkit-app-region: drag;
-    user-select: none;
-    font-family: -apple-system, "Segoe UI", Arial, sans-serif;
-  }
-  .panel {
-    width: 214px;
-    height: 76px;
-    margin: 8px;
-    padding: 10px 14px;
-    border-radius: 14px;
-    background: rgba(28, 28, 32, 0.88);
-    box-shadow: 0 6px 18px rgba(0,0,0,0.35);
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .dot {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: #555;
-    box-shadow: 0 0 0 3px rgba(255,255,255,0.06);
-    transition: background 0.2s ease, box-shadow 0.2s ease;
-    flex-shrink: 0;
-  }
-  .dot.waiting { background: #e63228; box-shadow: 0 0 14px 2px #e63228aa; }
-  .dot.running { background: #f5b414; box-shadow: 0 0 14px 2px #f5b414aa; }
-  .dot.done    { background: #28b446; box-shadow: 0 0 14px 2px #28b446aa; }
-  .dot.idle    { background: #666; }
 
-  .text {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
-  }
-  .title {
-    color: #fff;
-    font-size: 13px;
-    font-weight: 600;
-  }
-  .message {
-    color: #b9b9c0;
-    font-size: 11px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 150px;
-  }
-</style>
+<head>
+  <meta charset="UTF-8" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: transparent;
+      overflow: hidden;
+      -webkit-app-region: drag;
+      user-select: none;
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* Mode 1 & 2 Base Container */
+    .container {
+      border: 3px solid #141413;
+      background: #1A1917;
+      box-shadow: 5px 5px 0 rgba(0, 0, 0, 0.3);
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      align-items: center;
+    }
+
+    .dot {
+      width: 30px;
+      height: 30px;
+      box-shadow: inset -4px -4px 0 rgba(0, 0, 0, 0.22), inset 4px 4px 0 rgba(255, 255, 255, 0.14);
+      transition: background 0.2s ease;
+    }
+
+    /* Dot Off Colors */
+    .dot-red {
+      background: #4A3B37;
+    }
+
+    .dot-yellow {
+      background: #463D2C;
+    }
+
+    .dot-green {
+      background: #334030;
+    }
+
+    /* Dot On Colors */
+    .dot-red.on {
+      background: #C6553F;
+    }
+
+    .dot-yellow.on {
+      background: #D9A441;
+    }
+
+    .dot-green.on {
+      background: #7A9E6B;
+    }
+
+    /* Mode 1 specific */
+    .label-container {
+      border-top: 2px solid #34302A;
+      padding-top: 7px;
+      margin-top: 2px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .status-label {
+      font-family: 'Inter', sans-serif;
+      font-weight: 800;
+      font-size: 10px;
+      white-space: nowrap;
+    }
+  </style>
 </head>
+
 <body>
-  <div class="panel">
-    <div class="dot idle" id="dot"></div>
-    <div class="text">
-      <div class="title" id="title">Đang chờ kết nối…</div>
-      <div class="message" id="message"></div>
+
+  <!-- Mode 1 & 2 Layout -->
+  <div id="layout-full" class="container">
+    <div id="dot-red" class="dot dot-red"></div>
+    <div id="dot-yellow" class="dot dot-yellow"></div>
+    <div id="dot-green" class="dot dot-green"></div>
+
+    <div id="label-box" class="label-container">
+      <div id="status-label" class="status-label">CHƯA HOẠT ĐỘNG</div>
     </div>
+  </div>
+
+  <!-- Mode 3 Layout (Minimal) -->
+  <div id="layout-minimal" class="container hidden" style="padding: 8px;">
+    <div id="dot-minimal" class="dot dot-red"></div>
   </div>
 
   <script src="renderer.js"></script>
 </body>
+
 </html>
