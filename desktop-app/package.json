@@ -1,0 +1,25 @@
+{
+  "name": "claude-traffic-light-desktop",
+  "version": "1.0.0",
+  "description": "Cửa sổ always-on-top + system tray hiển thị trạng thái Claude Code (đỏ/vàng/xanh)",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dist:win": "electron-builder --win"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.vuicoding.claudetrafficlight",
+    "productName": "Claude Traffic Light",
+    "win": {
+      "target": "nsis",
+      "icon": "assets/green-256.png"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "claude-traffic-light-server",
+  "version": "1.0.0",
+  "description": "Local relay server: nhận trạng thái từ Claude Code hooks, phát cho desktop app và browser extension",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}

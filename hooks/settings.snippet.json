@@ -1,0 +1,45 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "curl -s -X POST http://localhost:7317/status -H \"Content-Type: application/json\" -d \"{\\\"status\\\":\\\"running\\\",\\\"message\\\":\\\"Claude dang xu ly\\\"}\" > /dev/null"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "curl -s -X POST http://localhost:7317/status -H \"Content-Type: application/json\" -d \"{\\\"status\\\":\\\"running\\\",\\\"message\\\":\\\"Dang chay tool\\\"}\" > /dev/null"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "curl -s -X POST http://localhost:7317/status -H \"Content-Type: application/json\" -d \"{\\\"status\\\":\\\"waiting\\\",\\\"message\\\":\\\"Claude Code dang cho xac nhan\\\"}\" > /dev/null"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "curl -s -X POST http://localhost:7317/status -H \"Content-Type: application/json\" -d \"{\\\"status\\\":\\\"done\\\",\\\"message\\\":\\\"Task da xong\\\"}\" > /dev/null"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    overflow: hidden;
+    -webkit-app-region: drag;
+    user-select: none;
+    font-family: -apple-system, "Segoe UI", Arial, sans-serif;
+  }
+  .panel {
+    width: 214px;
+    height: 76px;
+    margin: 8px;
+    padding: 10px 14px;
+    border-radius: 14px;
+    background: rgba(28, 28, 32, 0.88);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #555;
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.06);
+    transition: background 0.2s ease, box-shadow 0.2s ease;
+    flex-shrink: 0;
+  }
+  .dot.waiting { background: #e63228; box-shadow: 0 0 14px 2px #e63228aa; }
+  .dot.running { background: #f5b414; box-shadow: 0 0 14px 2px #f5b414aa; }
+  .dot.done    { background: #28b446; box-shadow: 0 0 14px 2px #28b446aa; }
+  .dot.idle    { background: #666; }
+
+  .text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .title {
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .message {
+    color: #b9b9c0;
+    font-size: 11px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+  }
+</style>
+</head>
+<body>
+  <div class="panel">
+    <div class="dot idle" id="dot"></div>
+    <div class="text">
+      <div class="title" id="title">Đang chờ kết nối…</div>
+      <div class="message" id="message"></div>
+    </div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
