@@ -1,11 +1,13 @@
 const promptTextarea = document.getElementById("promptText");
 
-promptTextarea.value =
-  'Hãy thêm các hooks sau vào file ~/.claude/settings.json của tôi (tạo file/thư mục nếu ' +
-  'chưa có, GIỮ NGUYÊN các cấu hình khác đã có trong file, chỉ merge thêm object "hooks" ' +
-  "bên dưới — nếu event nào đã có hook thì thêm nối vào mảng, đừng ghi đè). Sau khi xong, " +
-  "nhắc tôi khởi động lại Claude Code.\n\n" +
-  window.trafficLight.hooksJson;
+window.trafficLight.getHooksJson().then((hooksJson) => {
+  promptTextarea.value =
+    'Hãy thêm các hooks sau vào file ~/.claude/settings.json của tôi (tạo file/thư mục nếu ' +
+    'chưa có, GIỮ NGUYÊN các cấu hình khác đã có trong file, chỉ merge thêm object "hooks" ' +
+    "bên dưới — nếu event nào đã có hook thì thêm nối vào mảng, đừng ghi đè). Sau khi xong, " +
+    "nhắc tôi khởi động lại Claude Code.\n\n" +
+    hooksJson;
+});
 
 document.getElementById("btnConnect").addEventListener("click", async () => {
   const resultEl = document.getElementById("connectResult");

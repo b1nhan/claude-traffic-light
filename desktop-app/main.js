@@ -184,6 +184,7 @@ if (!app.requestSingleInstanceLock()) {
   });
 
   ipcMain.handle("get-script-path", () => getScriptPath());
+  ipcMain.handle("get-hooks-json", () => JSON.stringify({ hooks: HOOKS }, null, 2));
 
   ipcMain.on("request-current-state", (event) => {
     event.reply("state-update", currentState);
