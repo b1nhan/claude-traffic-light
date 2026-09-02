@@ -1,0 +1,1620 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Claude Traffic Light</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        margin: 0;
+        background: #efebe3;
+        font-family: "Inter", system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      a {
+        color: #c6553f;
+        text-decoration: none;
+      }
+      .nav-link {
+        font-size: 13.5px;
+        font-weight: 600;
+        color: #4a453d;
+      }
+      .nav-link:hover {
+        color: #c6553f;
+      }
+      .foot-link {
+        font-size: 12.5px;
+        color: #8c8579;
+      }
+      .foot-link:hover {
+        color: #c6553f;
+      }
+      .btn-primary {
+        border: 2px solid #141413;
+        background: #c6553f;
+        box-shadow: 3px 3px 0 #141413;
+        padding: 9px 18px;
+        font-family: "Inter", sans-serif;
+        font-weight: 700;
+        font-size: 12px;
+        letter-spacing: 0.3px;
+        color: #fff8f0;
+        display: inline-block;
+      }
+      .btn-primary:hover {
+        background: #a8412f;
+      }
+      .btn-hero-primary {
+        border: 2px solid #141413;
+        background: #c6553f;
+        box-shadow: 4px 4px 0 #141413;
+        padding: 14px 26px;
+        font-family: "Inter", sans-serif;
+        font-weight: 700;
+        font-size: 13.5px;
+        letter-spacing: 0.3px;
+        color: #fff8f0;
+      }
+      .btn-hero-primary:hover {
+        background: #a8412f;
+      }
+      .btn-hero-primary:active {
+        box-shadow: 0 0 0 #141413;
+        transform: translate(4px, 4px);
+      }
+      .btn-hero-secondary {
+        border: 2px solid #141413;
+        background: #fffdf9;
+        box-shadow: 4px 4px 0 #e3ddd2;
+        padding: 14px 26px;
+        font-family: "Inter", sans-serif;
+        font-weight: 700;
+        font-size: 13.5px;
+        letter-spacing: 0.3px;
+        color: #141413;
+      }
+      .btn-hero-secondary:hover {
+        background: #f3efe7;
+      }
+      .btn-hero-secondary:active {
+        box-shadow: 0 0 0 #e3ddd2;
+        transform: translate(4px, 4px);
+      }
+      .btn-outline {
+        border: 2px solid #141413;
+        background: #fffdf9;
+        box-shadow: 3px 3px 0 #e3ddd2;
+        padding: 9px 0;
+        text-align: center;
+        font-family: "Inter", sans-serif;
+        font-weight: 700;
+        font-size: 11.5px;
+        letter-spacing: 0.3px;
+        color: #141413;
+        display: block;
+      }
+      .btn-outline:hover {
+        background: #f3efe7;
+      }
+      .btn-donate {
+        border: 2px solid #141413;
+        box-shadow: 4px 4px 0 #141413;
+        padding: 13px 24px;
+        font-family: "Inter", sans-serif;
+        font-weight: 700;
+        font-size: 12.5px;
+        letter-spacing: 0.3px;
+      }
+      @keyframes blip {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.35;
+        }
+      }
+      .image-slot {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f3efe7;
+        color: #8c8579;
+        font-size: 13px;
+      }
+      .logo-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .logo-badge svg {
+        display: block;
+      }
+      .carousel {
+        position: relative;
+        border: 1px solid #e7e1d6;
+        border-radius: 10px;
+        overflow: hidden;
+        background: #f3efe7;
+        height: 60vh;
+        aspect-ratio: 1920 / 1440;
+        max-width: 100%;
+        margin: 0 auto;
+      }
+      .carousel-track {
+        display: flex;
+        height: 100%;
+        transition: transform 0.4s ease;
+      }
+      .carousel-slide {
+        flex: 0 0 100%;
+        height: 100%;
+      }
+      .carousel-slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+      }
+      .carousel-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 34px;
+        height: 34px;
+        border: 2px solid #141413;
+        background: #fffdf9;
+        box-shadow: 2px 2px 0 #141413;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-family: "Inter", sans-serif;
+        font-weight: 700;
+      }
+      .carousel-btn:hover {
+        background: #f3efe7;
+      }
+      .carousel-btn.prev {
+        left: 14px;
+      }
+      .carousel-btn.next {
+        right: 14px;
+      }
+      .carousel-dots {
+        position: absolute;
+        bottom: 14px;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+      }
+      .carousel-dot {
+        width: 8px;
+        height: 8px;
+        border: 1px solid #141413;
+        background: #fffdf9;
+        cursor: pointer;
+        padding: 0;
+      }
+      .carousel-dot.active {
+        background: #c6553f;
+      }
+    </style>
+  </head>
+  <body>
+    <div style="display: flex; flex-direction: column; min-height: 100vh">
+      <div
+        style="
+          position: sticky;
+          top: 0;
+          z-index: 20;
+          background: #efebe3;
+          border-bottom: 1px solid #ded7cb;
+        "
+      >
+        <div
+          style="
+            max-width: 1160px;
+            margin: 0 auto;
+            padding: 0 32px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            gap: 28px;
+          "
+        >
+          <div
+            style="display: flex; align-items: center; gap: 10px; flex: none"
+          >
+            <div
+              style="
+                width: 22px;
+                height: 30px;
+                border: 2px solid #141413;
+                background: #141413;
+                padding: 3px;
+                display: flex;
+                flex-direction: column;
+                gap: 2px;
+              "
+            >
+              <div style="flex: 1; background: #c6553f"></div>
+              <div style="flex: 1; background: #d9a441"></div>
+              <div style="flex: 1; background: #7a9e6b"></div>
+            </div>
+            <div
+              style="
+                font-family: &quot;Inter&quot;, sans-serif;
+                font-weight: 700;
+                font-size: 12.5px;
+                color: #141413;
+              "
+            >
+              Claude Traffic Light
+            </div>
+          </div>
+          <div style="flex: 1"></div>
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              gap: 22px;
+              flex-wrap: wrap;
+            "
+          >
+            <a class="nav-link" href="#gioi-thieu">Giới thiệu</a>
+            <a class="nav-link" href="#cach-dung">Cách dùng</a>
+            <a class="nav-link" href="#nen-tang">Nền tảng</a>
+            <a class="nav-link" href="#donate">Donate</a>
+          </div>
+          <a class="btn-primary" href="#download">TẢI XUỐNG</a>
+        </div>
+      </div>
+
+      <div
+        style="
+          max-width: 1160px;
+          margin: 0 auto;
+          padding: 72px 32px 88px;
+          display: flex;
+          gap: 56px;
+          align-items: center;
+          flex-wrap: wrap;
+        "
+      >
+        <div
+          style="
+            flex: 1;
+            min-width: 340px;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+            align-items: flex-start;
+          "
+        >
+          <div
+            style="
+              font-family: &quot;Inter&quot;, sans-serif;
+              font-weight: 700;
+              font-size: 10.5px;
+              letter-spacing: 1.4px;
+              color: #8c8579;
+            "
+          >
+            CLAUDE CODE · TRACK TRẠNG THÁI REAL-TIME
+          </div>
+          <div
+            style="
+              font-family: &quot;Inter&quot;, system-ui, sans-serif;
+              font-size: 44px;
+              font-weight: 800;
+              letter-spacing: -1px;
+              line-height: 1.12;
+              color: #141413;
+              text-wrap: pretty;
+            "
+          >
+            Biết ngay Claude Code đang làm gì — không cần check terminal liên
+            tục
+          </div>
+          <div
+            style="
+              font-size: 16px;
+              line-height: 1.6;
+              color: #6b655b;
+              max-width: 480px;
+              text-wrap: pretty;
+            "
+          >
+            Đèn giao thông cho Claude Code. Giúp bạn quan sát trạng thái hiện
+            tại của Claude dễ dàng hơn. Widget, system tray và extension.
+          </div>
+          <div
+            style="display: flex; gap: 12px; margin-top: 6px; flex-wrap: wrap"
+          >
+            <a class="btn-hero-primary" href="#download">TẢI XUỐNG MIỄN PHÍ</a>
+            <a class="btn-hero-secondary" href="#donate">BUY ME A COFFEE</a>
+          </div>
+        </div>
+
+        <div
+          style="
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            justify-content: center;
+          "
+        >
+          <div
+            style="
+              width: 340px;
+              height: 340px;
+              background: #3b3f4a;
+              border: 1px solid #cfc7b9;
+              border-radius: 12px;
+              box-shadow: 0 20px 46px rgba(20, 20, 19, 0.18);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              position: relative;
+              overflow: hidden;
+            "
+          >
+            <div
+              style="
+                border: 3px solid #141413;
+                background: #0d0c0b;
+                box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.3);
+                padding: 14px;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                align-items: center;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  gap: 8px;
+                  padding: 10px;
+                  border: 3px solid #34302a;
+                  background: #0d0c0b;
+                "
+              >
+                <div
+                  id="light-red"
+                  style="
+                    width: 44px;
+                    height: 44px;
+                    box-shadow:
+                      inset -5px -5px 0 rgba(0, 0, 0, 0.22),
+                      inset 5px 5px 0 rgba(255, 255, 255, 0.16);
+                    transition: background 0.3s;
+                  "
+                ></div>
+                <div
+                  id="light-yellow"
+                  style="
+                    width: 44px;
+                    height: 44px;
+                    box-shadow:
+                      inset -5px -5px 0 rgba(0, 0, 0, 0.22),
+                      inset 5px 5px 0 rgba(255, 255, 255, 0.16);
+                    transition: background 0.3s;
+                  "
+                ></div>
+                <div
+                  id="light-green"
+                  style="
+                    width: 44px;
+                    height: 44px;
+                    box-shadow:
+                      inset -5px -5px 0 rgba(0, 0, 0, 0.22),
+                      inset 5px 5px 0 rgba(255, 255, 255, 0.16);
+                    transition: background 0.3s;
+                  "
+                ></div>
+              </div>
+              <div
+                id="status-box"
+                style="
+                  border: 2px solid #e08a72;
+                  background: #0d0c0b;
+                  padding: 7px 14px;
+                  text-align: center;
+                "
+              >
+                <div
+                  id="status-label"
+                  style="
+                    font-family: &quot;Inter&quot;, sans-serif;
+                    font-weight: 700;
+                    font-size: 11px;
+                    color: #e08a72;
+                    letter-spacing: 0.5px;
+                  "
+                >
+                  CHỜ XÁC NHẬN
+                </div>
+              </div>
+            </div>
+            <div
+              style="
+                position: absolute;
+                bottom: 14px;
+                left: 16px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+              "
+            >
+              <div
+                style="
+                  width: 7px;
+                  height: 7px;
+                  background: #7a9e6b;
+                  animation: blip 1.6s steps(2, end) infinite;
+                "
+              ></div>
+              <div
+                style="
+                  font-family: &quot;Inter&quot;, sans-serif;
+                  font-weight: 700;
+                  font-size: 8px;
+                  color: #c9c1b4;
+                  letter-spacing: 0.6px;
+                "
+              >
+                SERVER · LOCALHOST:7317
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        id="gioi-thieu"
+        style="
+          background: #fffdf9;
+          border-top: 1px solid #e7e1d6;
+          border-bottom: 1px solid #e7e1d6;
+          padding: 80px 32px;
+        "
+      >
+        <div
+          style="
+            max-width: 1160px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 36px;
+          "
+        >
+          <div
+            style="
+              display: flex;
+              flex-direction: column;
+              gap: 14px;
+              max-width: 640px;
+            "
+          >
+            <div
+              style="
+                font-family: &quot;Inter&quot;, sans-serif;
+                font-weight: 700;
+                font-size: 10.5px;
+                letter-spacing: 1.4px;
+                color: #8c8579;
+              "
+            >
+              GIỚI THIỆU
+            </div>
+            <div
+              style="
+                font-size: 30px;
+                font-weight: 800;
+                letter-spacing: -0.5px;
+                color: #141413;
+              "
+            >
+              Vì sao cần đèn giao thông cho Claude Code?
+            </div>
+            <div
+              style="
+                font-size: 15.5px;
+                line-height: 1.65;
+                color: #6b655b;
+                text-wrap: pretty;
+              "
+            >
+              Claude Code có thể chạy hàng chục phút mà không cần bạn động tay —
+              cho đến khi nó cần xác nhận một thao tác. Nếu bạn đang làm việc
+              khác, rất dễ bỏ lỡ. Claude Traffic Light biến trạng thái của
+              Claude Code thành một tín hiệu bạn không thể bỏ qua, dù đang ở cửa
+              sổ nào.
+            </div>
+          </div>
+          <div
+            style="
+              display: grid;
+              grid-template-columns: repeat(3, 1fr);
+              gap: 18px;
+            "
+          >
+            <div
+              style="
+                border: 1px solid #e7e1d6;
+                background: #faf8f4;
+                border-radius: 10px;
+                padding: 22px;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+              "
+            >
+              <div
+                style="
+                  width: 26px;
+                  height: 26px;
+                  border-radius: 50%;
+                  background: #c6553f;
+                "
+              ></div>
+              <div
+                style="
+                  font-family: &quot;Inter&quot;, sans-serif;
+                  font-weight: 700;
+                  font-size: 12px;
+                  color: #141413;
+                  letter-spacing: 0.4px;
+                "
+              >
+                CHỜ XÁC NHẬN
+              </div>
+              <div style="font-size: 13.5px; line-height: 1.55; color: #6b655b">
+                Claude cần bạn duyệt một thao tác, hỏi thông tin, xác nhận yêu
+                cầu,... trước khi tiếp tục.
+              </div>
+            </div>
+            <div
+              style="
+                border: 1px solid #e7e1d6;
+                background: #faf8f4;
+                border-radius: 10px;
+                padding: 22px;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+              "
+            >
+              <div
+                style="
+                  width: 26px;
+                  height: 26px;
+                  border-radius: 50%;
+                  background: #d9a441;
+                "
+              ></div>
+              <div
+                style="
+                  font-family: &quot;Inter&quot;, sans-serif;
+                  font-weight: 700;
+                  font-size: 12px;
+                  color: #141413;
+                  letter-spacing: 0.4px;
+                "
+              >
+                ĐANG CHẠY
+              </div>
+              <div style="font-size: 13.5px; line-height: 1.55; color: #6b655b">
+                Claude Code đang xử lý — nhận prompt, chạy tool, suy nghĩ bước
+                tiếp theo.
+              </div>
+            </div>
+            <div
+              style="
+                border: 1px solid #e7e1d6;
+                background: #faf8f4;
+                border-radius: 10px;
+                padding: 22px;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+              "
+            >
+              <div
+                style="
+                  width: 26px;
+                  height: 26px;
+                  border-radius: 50%;
+                  background: #7a9e6b;
+                "
+              ></div>
+              <div
+                style="
+                  font-family: &quot;Inter&quot;, sans-serif;
+                  font-weight: 700;
+                  font-size: 12px;
+                  color: #141413;
+                  letter-spacing: 0.4px;
+                "
+              >
+                XONG VIỆC
+              </div>
+              <div style="font-size: 13.5px; line-height: 1.55; color: #6b655b">
+                Task đã xong, sẵn sàng nhận việc mới — quay lại tiếp tục ngay.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="cach-dung" style="padding: 80px 32px">
+        <div
+          style="
+            max-width: 1160px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 36px;
+          "
+        >
+          <div
+            style="
+              display: flex;
+              flex-direction: column;
+              gap: 14px;
+              max-width: 640px;
+            "
+          >
+            <div
+              style="
+                font-family: &quot;Inter&quot;, sans-serif;
+                font-weight: 700;
+                font-size: 10.5px;
+                letter-spacing: 1.4px;
+                color: #8c8579;
+              "
+            >
+              CÁCH SỬ DỤNG
+            </div>
+            <div
+              style="
+                font-size: 30px;
+                font-weight: 800;
+                letter-spacing: -0.5px;
+                color: #141413;
+              "
+            >
+              Chỉ 3 bước để bắt đầu
+            </div>
+          </div>
+          <div
+            style="
+              display: grid;
+              grid-template-columns: repeat(3, 1fr);
+              gap: 18px;
+            "
+          >
+            <div
+              style="
+                border: 1px solid #e7e1d6;
+                background: #fffdf9;
+                border-radius: 10px;
+                padding: 22px;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+              "
+            >
+              <div
+                style="
+                  width: 28px;
+                  height: 28px;
+                  background: #c6553f;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-family: &quot;Inter&quot;, sans-serif;
+                  font-weight: 700;
+                  font-size: 13px;
+                  color: #fff;
+                "
+              >
+                1
+              </div>
+              <div style="font-size: 16px; font-weight: 700; color: #141413">
+                Chạy app
+              </div>
+              <div style="font-size: 13.5px; line-height: 1.6; color: #6b655b">
+                Mở app desktop (hoặc file .exe portable) — cửa sổ nổi, tray icon
+                và server nhúng cùng khởi động.
+              </div>
+            </div>
+            <div
+              style="
+                border: 1px solid #e7e1d6;
+                background: #fffdf9;
+                border-radius: 10px;
+                padding: 22px;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+              "
+            >
+              <div
+                style="
+                  width: 28px;
+                  height: 28px;
+                  background: #141413;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-family: &quot;Inter&quot;, sans-serif;
+                  font-weight: 700;
+                  font-size: 13px;
+                  color: #fff;
+                "
+              >
+                2
+              </div>
+              <div style="font-size: 16px; font-weight: 700; color: #141413">
+                Nối Claude Code
+              </div>
+              <div style="font-size: 13.5px; line-height: 1.6; color: #6b655b">
+                Chọn 1 trong 3 cách ngay trong app: bấm "Connect to Claude" để
+                tự động, chạy sẵn 1 script PowerShell, hoặc nhờ Claude Code tự
+                cấu hình giúp bạn.
+              </div>
+            </div>
+            <div
+              style="
+                border: 1px solid #e7e1d6;
+                background: #fffdf9;
+                border-radius: 10px;
+                padding: 22px;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+              "
+            >
+              <div
+                style="
+                  width: 28px;
+                  height: 28px;
+                  background: #141413;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-family: &quot;Inter&quot;, sans-serif;
+                  font-weight: 700;
+                  font-size: 13px;
+                  color: #fff;
+                "
+              >
+                3
+              </div>
+              <div style="font-size: 16px; font-weight: 700; color: #141413">
+                Theo dõi trạng thái
+              </div>
+              <div style="font-size: 13.5px; line-height: 1.6; color: #6b655b">
+                Vậy là xong! Từ giờ, mỗi khi Claude chạy tool, cần xác nhận hoặc
+                xong việc — app đều đổi màu real-time.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        id="nen-tang"
+        style="
+          background: #fffdf9;
+          border-top: 1px solid #e7e1d6;
+          border-bottom: 1px solid #e7e1d6;
+          padding: 80px 32px;
+        "
+      >
+        <div
+          style="
+            max-width: 1160px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 36px;
+          "
+        >
+          <div
+            style="
+              display: flex;
+              flex-direction: column;
+              gap: 14px;
+              max-width: 640px;
+            "
+          >
+            <div
+              style="
+                font-family: &quot;Inter&quot;, sans-serif;
+                font-weight: 700;
+                font-size: 10.5px;
+                letter-spacing: 1.4px;
+                color: #8c8579;
+              "
+            >
+              NỀN TẢNG HỖ TRỢ
+            </div>
+            <div
+              style="
+                font-size: 30px;
+                font-weight: 800;
+                letter-spacing: -0.5px;
+                color: #141413;
+              "
+            >
+              Chạy trên nền tảng của bạn
+            </div>
+          </div>
+          <div
+            style="
+              display: grid;
+              grid-template-columns: repeat(4, 1fr);
+              gap: 16px;
+            "
+          >
+            <div
+              style="
+                border: 1px solid #e7e1d6;
+                background: #faf8f4;
+                border-radius: 10px;
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                min-width: 0;
+              "
+            >
+              <div class="logo-badge" style="width: 32px; height: 32px">
+                <img
+                  src="public/logo/windows.svg"
+                  width="32"
+                  height="32"
+                  alt="Windows"
+                />
+              </div>
+              <div style="font-size: 14.5px; font-weight: 700; color: #141413">
+                Windows
+              </div>
+              <div style="font-size: 12.5px; line-height: 1.5; color: #6b655b">
+                File .exe portable, không cần cài đặt.
+              </div>
+            </div>
+            <div
+              style="
+                border: 1px solid #e7e1d6;
+                background: #faf8f4;
+                border-radius: 10px;
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                min-width: 0;
+              "
+            >
+              <div class="logo-badge" style="width: 32px; height: 32px">
+                <img
+                  src="public/logo/apple.svg"
+                  width="32"
+                  height="32"
+                  alt="macOS"
+                />
+              </div>
+              <div style="font-size: 14.5px; font-weight: 700; color: #141413">
+                macOS
+                <span style="font-weight: 500; color: #6b655b">(Beta)</span>
+              </div>
+              <div style="font-size: 12.5px; line-height: 1.5; color: #6b655b">
+                Desktop app đóng gói .dmg.
+              </div>
+            </div>
+            <div
+              style="
+                border: 1px solid #e7e1d6;
+                background: #faf8f4;
+                border-radius: 10px;
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                min-width: 0;
+              "
+            >
+              <div class="logo-badge" style="width: 32px; height: 32px">
+                <img
+                  src="public/logo/linux.svg"
+                  width="32"
+                  height="32"
+                  alt="Linux"
+                />
+              </div>
+              <div style="font-size: 14.5px; font-weight: 700; color: #141413">
+                Linux
+                <span style="font-weight: 500; color: #6b655b">(Beta)</span>
+              </div>
+              <div style="font-size: 12.5px; line-height: 1.5; color: #6b655b">
+                AppImage, chạy trực tiếp.
+              </div>
+            </div>
+            <div
+              style="
+                border: 1px solid #e7e1d6;
+                background: #faf8f4;
+                border-radius: 10px;
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                min-width: 0;
+              "
+            >
+              <div class="logo-badge" style="width: 32px; height: 32px">
+                <img
+                  src="public/logo/extension.svg"
+                  width="32"
+                  height="32"
+                  alt="Chrome / Edge"
+                />
+              </div>
+              <div style="font-size: 14.5px; font-weight: 700; color: #141413">
+                Chrome / Edge
+                <span style="font-weight: 500; color: #6b655b">(Beta)</span>
+              </div>
+              <div style="font-size: 12.5px; line-height: 1.5; color: #6b655b">
+                Extension chạy trên trình duyệt.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="demo" style="padding: 80px 32px">
+        <div
+          style="
+            max-width: 1160px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 36px;
+          "
+        >
+          <div
+            style="
+              display: flex;
+              flex-direction: column;
+              gap: 14px;
+              max-width: 640px;
+            "
+          >
+            <div
+              style="
+                font-family: &quot;Inter&quot;, sans-serif;
+                font-weight: 700;
+                font-size: 10.5px;
+                letter-spacing: 1.4px;
+                color: #8c8579;
+              "
+            >
+              SHOWCASE
+            </div>
+            <div
+              style="
+                font-size: 30px;
+                font-weight: 800;
+                letter-spacing: -0.5px;
+                color: #141413;
+              "
+            >
+              App trông như thế nào
+            </div>
+          </div>
+          <div class="carousel">
+            <div class="carousel-track" id="demo-track">
+              <div class="carousel-slide">
+                <img
+                  src="public/screenshots/app.png"
+                  alt="Giao diện ứng dụng"
+                />
+              </div>
+              <div class="carousel-slide">
+                <img
+                  src="public/screenshots/standard_view.png"
+                  alt="Chế độ Standard"
+                />
+              </div>
+              <div class="carousel-slide">
+                <img
+                  src="public/screenshots/compact_view.png"
+                  alt="Chế độ Compact"
+                />
+              </div>
+              <div class="carousel-slide">
+                <img
+                  src="public/screenshots/minimal_view.png"
+                  alt="Chế độ Minimal"
+                />
+              </div>
+              <div class="carousel-slide">
+                <img
+                  src="public/screenshots/system_tray.png"
+                  alt="System tray"
+                />
+              </div>
+              <div class="carousel-slide">
+                <img
+                  src="public/screenshots/system_tray_option.png"
+                  alt="Tuỳ chọn system tray"
+                />
+              </div>
+            </div>
+            <button
+              class="carousel-btn prev"
+              onclick="demoCarousel(-1)"
+              aria-label="Trước"
+            >
+              &#8592;
+            </button>
+            <button
+              class="carousel-btn next"
+              onclick="demoCarousel(1)"
+              aria-label="Sau"
+            >
+              &#8594;
+            </button>
+            <div class="carousel-dots" id="demo-dots"></div>
+          </div>
+          <div
+            id="demo-caption"
+            style="font-size: 13px; color: #8c8579; text-align: center"
+          >
+            Cửa sổ nổi trên desktop
+          </div>
+        </div>
+      </div>
+
+      <div
+        id="download"
+        style="
+          background: #fffdf9;
+          border-top: 1px solid #e7e1d6;
+          border-bottom: 1px solid #e7e1d6;
+          padding: 80px 32px;
+        "
+      >
+        <div
+          style="
+            max-width: 1160px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 36px;
+          "
+        >
+          <div
+            style="
+              display: flex;
+              flex-direction: column;
+              gap: 14px;
+              max-width: 640px;
+            "
+          >
+            <div
+              style="
+                font-family: &quot;Inter&quot;, sans-serif;
+                font-weight: 700;
+                font-size: 10.5px;
+                letter-spacing: 1.4px;
+                color: #8c8579;
+              "
+            >
+              TẢI XUỐNG
+            </div>
+            <div
+              style="
+                font-size: 30px;
+                font-weight: 800;
+                letter-spacing: -0.5px;
+                color: #141413;
+              "
+            >
+              Tải xuống và sử dụng — hoàn toàn miễn phí
+            </div>
+          </div>
+
+          <div
+            style="
+              display: grid;
+              grid-template-columns: repeat(4, 1fr);
+              gap: 16px;
+            "
+          >
+            <div
+              style="
+                border: 1px solid #e7e1d6;
+                background: #faf8f4;
+                border-radius: 10px;
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+              "
+            >
+              <div class="logo-badge" style="width: 32px; height: 32px">
+                <img
+                  src="public/logo/github.svg"
+                  width="32"
+                  height="32"
+                  alt="GitHub"
+                />
+              </div>
+              <div style="font-size: 15px; font-weight: 700; color: #141413">
+                GitHub Release
+              </div>
+              <div
+                style="
+                  font-size: 12.5px;
+                  line-height: 1.5;
+                  color: #6b655b;
+                  flex: 1;
+                "
+              >
+                Tải xuống trực tiếp từ GitHub Release.
+              </div>
+              <a
+                class="btn-outline"
+                href="https://github.com/b1nhan/claude-traffic-light/releases"
+                >CLICK</a
+              >
+            </div>
+            <div
+              style="
+                border: 1px solid #e7e1d6;
+                background: #faf8f4;
+                border-radius: 10px;
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+              "
+            >
+              <div class="logo-badge" style="width: 32px; height: 32px">
+                <img
+                  src="public/logo/itchio.svg"
+                  width="32"
+                  height="32"
+                  alt="itch.io"
+                />
+              </div>
+              <div style="font-size: 15px; font-weight: 700; color: #141413">
+                itch.io
+              </div>
+              <div
+                style="
+                  font-size: 12.5px;
+                  line-height: 1.5;
+                  color: #6b655b;
+                  flex: 1;
+                "
+              >
+                Tải xuống ở itch.io, pay what you want.
+              </div>
+              <a class="btn-outline" href="#">CLICK</a>
+            </div>
+            <div
+              style="
+                border: 1px solid #e7e1d6;
+                background: #faf8f4;
+                border-radius: 10px;
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+              "
+            >
+              <div class="logo-badge" style="width: 32px; height: 32px">
+                <img
+                  src="public/logo/kofi.svg"
+                  width="32"
+                  height="32"
+                  alt="Ko-fi"
+                />
+              </div>
+              <div style="font-size: 15px; font-weight: 700; color: #141413">
+                Ko-fi
+              </div>
+              <div
+                style="
+                  font-size: 12.5px;
+                  line-height: 1.5;
+                  color: #6b655b;
+                  flex: 1;
+                "
+              >
+                Tải xuống miễn phí hoặc ủng hộ mình một chút.
+              </div>
+              <a class="btn-outline" href="#">CLICK</a>
+            </div>
+            <div
+              style="
+                border: 1px solid #e7e1d6;
+                background: #faf8f4;
+                border-radius: 10px;
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+              "
+            >
+              <div class="logo-badge" style="width: 128px; height: 32px">
+                <img
+                  src="public/logo/bymeacoffee.svg"
+                  width="128"
+                  height="128"
+                  alt="Buy Me a Coffee"
+                />
+              </div>
+              <div style="font-size: 15px; font-weight: 700; color: #141413">
+                Buy Me a Coffee
+              </div>
+              <div
+                style="
+                  font-size: 12.5px;
+                  line-height: 1.5;
+                  color: #6b655b;
+                  flex: 1;
+                "
+              >
+                Tải xuống và ủng hộ mình một cốc cà hê.
+              </div>
+              <a class="btn-outline" href="#">CLICK</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="donate" style="padding: 80px 32px">
+        <div
+          style="
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 360px 1fr 360px;
+            align-items: center;
+            gap: 40px;
+          "
+        >
+          <div></div>
+          <div
+            style="
+              display: flex;
+              flex-direction: column;
+              gap: 24px;
+              align-items: center;
+              text-align: center;
+              max-width: 560px;
+              margin: 0 auto;
+            "
+          >
+            <div
+              style="
+                font-family: &quot;Inter&quot;, sans-serif;
+                font-weight: 700;
+                font-size: 10.5px;
+                letter-spacing: 1.4px;
+                color: #8c8579;
+              "
+            >
+              ỦNG HỘ MÌNH
+            </div>
+            <div
+              style="
+                font-size: 30px;
+                font-weight: 800;
+                letter-spacing: -0.5px;
+                color: #141413;
+              "
+            >
+              BUY ME A COFFEE
+            </div>
+            <div
+              style="
+                font-size: 15.5px;
+                line-height: 1.65;
+                color: #6b655b;
+                max-width: 560px;
+                text-wrap: pretty;
+              "
+            >
+              Tặng mình một cốc cà phê nếu bạn thấy Claude Traffic Light hữu
+              ích. <br />Tấm lòng của bạn sẽ giúp mình có thêm động lực để tiếp
+              tục phát triển các sản phẩm hay ho khác.
+            </div>
+            <div
+              style="
+                display: flex;
+                gap: 12px;
+                flex-wrap: wrap;
+                justify-content: center;
+                margin-top: 8px;
+              "
+            >
+              <a
+                class="btn-donate"
+                style="background: #c6553f; color: #fff8f0"
+                href="#"
+                >KO-FI</a
+              >
+              <a
+                class="btn-donate"
+                style="background: #d9a441; color: #141413"
+                href="#"
+                >BUY ME A COFFEE</a
+              >
+              <a
+                class="btn-donate"
+                style="background: #fffdf9; color: #141413"
+                href="#"
+                >ITCH.IO</a
+              >
+              <button
+                id="qr-toggle-btn"
+                class="btn-donate"
+                style="background: #141413; color: #fff8f0; cursor: pointer"
+                onclick="toggleQr()"
+              >
+                QR CODE
+              </button>
+            </div>
+          </div>
+
+          <div
+            id="qr-panel"
+            style="
+              border: 2px solid #141413;
+              box-shadow: 4px 4px 0 #141413;
+              background: #fffdf9;
+              padding: 18px;
+              display: none;
+              flex-direction: column;
+              gap: 14px;
+              width: 360px;
+              flex: none;
+            "
+          >
+            <div
+              style="
+                font-family: &quot;Inter&quot;, sans-serif;
+                font-weight: 700;
+                font-size: 12.5px;
+                letter-spacing: 0.6px;
+                color: #141413;
+              "
+            >
+              CHUYỂN KHOẢN
+            </div>
+            <div style="display: flex; gap: 18px">
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                  gap: 10px;
+                  flex: 1;
+                  min-width: 0;
+                "
+              >
+                <input
+                  id="qr-amount"
+                  type="number"
+                  min="0"
+                  placeholder="Số tiền (VND)"
+                  style="
+                    width: 100%;
+                    box-sizing: border-box;
+                    border: 2px solid #141413;
+                    padding: 8px 10px;
+                    font-family: &quot;Inter&quot;, sans-serif;
+                    font-size: 13px;
+                  "
+                />
+                <input
+                  id="qr-message"
+                  type="text"
+                  maxlength="50"
+                  placeholder="Lời nhắn donate"
+                  value="Ung ho Claude Traffic Light"
+                  style="
+                    width: 100%;
+                    box-sizing: border-box;
+                    border: 2px solid #141413;
+                    padding: 8px 10px;
+                    font-family: &quot;Inter&quot;, sans-serif;
+                    font-size: 13px;
+                  "
+                />
+                <button
+                  class="btn-outline"
+                  onclick="updateQr()"
+                  style="cursor: pointer; width: 100%"
+                >
+                  TẠO MÃ QR
+                </button>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+                  gap: 8px;
+                  flex: none;
+                "
+              >
+                <img
+                  id="qr-img"
+                  src="https://img.vietqr.io/image/mbbank-100736047-qr_only.png?amount=&addInfo=Ung%20ho%20Claude%20Traffic%20Light&accountName=DAO%20BINH%20AN"
+                  alt="VietQR donate"
+                  width="140"
+                  height="140"
+                  style="display: block; width: 140px; height: 140px"
+                />
+                <div
+                  style="
+                    font-size: 11px;
+                    color: #6b655b;
+                    text-align: center;
+                    max-width: 140px;
+                  "
+                >
+                  Quét mã VietQR để ủng hộ
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="border-top: 1px solid #ded7cb; padding: 32px">
+        <div
+          style="
+            max-width: 1160px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+          "
+        >
+          <div style="display: flex; align-items: center; gap: 10px">
+            <div style="font-size: 12.5px; color: #8c8579">
+              © 2026 Claude Traffic Light · by
+              <a
+                href="https://github.com/b1nhan"
+                target="_blank"
+                style="font-weight: bold"
+                >b1nhan</a
+              >
+              /2026
+            </div>
+          </div>
+          <div style="display: flex; gap: 18px; flex-wrap: wrap">
+            <a class="foot-link" href="#gioi-thieu">Giới thiệu</a>
+            <a class="foot-link" href="#nen-tang">Nền tảng</a>
+            <a class="foot-link" href="#download">Tải xuống</a>
+            <a class="foot-link" href="#donate">Donate</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const OFF = { red: "#4A3B37", yellow: "#463D2C", green: "#334030" };
+      const ON = { red: "#C6553F", yellow: "#D9A441", green: "#7A9E6B" };
+      const INFO = {
+        waiting: { label: "CHỜ XÁC NHẬN", color: "#E08A72" },
+        running: { label: "ĐANG CHẠY", color: "#D9A441" },
+        done: { label: "XONG VIỆC", color: "#8FB57F" },
+      };
+      const SEQ = ["waiting", "running", "done"];
+
+      const redEl = document.getElementById("light-red");
+      const yellowEl = document.getElementById("light-yellow");
+      const greenEl = document.getElementById("light-green");
+      const boxEl = document.getElementById("status-box");
+      const labelEl = document.getElementById("status-label");
+
+      const demoCaptions = [
+        "Giao diện ứng dụng",
+        "Chế độ Standard",
+        "Chế độ Compact",
+        "Chế độ Minimal",
+        "System tray",
+        "Tuỳ chọn system tray",
+      ];
+      const demoTrack = document.getElementById("demo-track");
+      const demoDots = document.getElementById("demo-dots");
+      const demoCaption = document.getElementById("demo-caption");
+      let demoIndex = 0;
+      demoCaptions.forEach((_, i) => {
+        const dot = document.createElement("button");
+        dot.className = "carousel-dot" + (i === 0 ? " active" : "");
+        dot.onclick = () => {
+          demoIndex = i;
+          renderDemo();
+        };
+        demoDots.appendChild(dot);
+      });
+      function renderDemo() {
+        demoTrack.style.transform = `translateX(-${demoIndex * 100}%)`;
+        demoCaption.textContent = demoCaptions[demoIndex];
+        [...demoDots.children].forEach((d, i) =>
+          d.classList.toggle("active", i === demoIndex),
+        );
+      }
+      function demoCarousel(dir) {
+        demoIndex =
+          (demoIndex + dir + demoCaptions.length) % demoCaptions.length;
+        renderDemo();
+      }
+      setInterval(() => demoCarousel(1), 4000);
+
+      function toggleQr() {
+        const panel = document.getElementById("qr-panel");
+        const show = panel.style.display === "none";
+        panel.style.display = show ? "flex" : "none";
+        if (show) updateQr();
+      }
+
+      function updateQr() {
+        const amount = document.getElementById("qr-amount").value.trim();
+        const message =
+          document.getElementById("qr-message").value.trim() ||
+          "Ung ho Claude Traffic Light";
+        const params = new URLSearchParams({
+          amount: amount,
+          addInfo: message,
+          accountName: "DAO BINH AN",
+        });
+        document.getElementById("qr-img").src =
+          `https://img.vietqr.io/image/mbbank-100736047-qr_only.png?${params}`;
+      }
+
+      let status = "waiting";
+      function render() {
+        const info = INFO[status];
+        redEl.style.background = status === "waiting" ? ON.red : OFF.red;
+        yellowEl.style.background =
+          status === "running" ? ON.yellow : OFF.yellow;
+        greenEl.style.background = status === "done" ? ON.green : OFF.green;
+        boxEl.style.borderColor = info.color;
+        labelEl.style.color = info.color;
+        labelEl.textContent = info.label;
+      }
+      render();
+      setInterval(() => {
+        status = SEQ[(SEQ.indexOf(status) + 1) % SEQ.length];
+        render();
+      }, 2200);
+    </script>
+  </body>
+</html>
