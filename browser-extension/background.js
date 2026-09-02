@@ -1,12 +1,15 @@
-const SERVER_HTTP = "http://localhost:7317/status";
-const SERVER_WS = "ws://localhost:7317";
+// Không còn phụ thuộc server local — trạng thái đến từ content-claude.js (mỗi tab
+// claude.ai tự quan sát DOM rồi gửi message lên đây). Nhiều tab claude.ai cùng lúc
+// thì ưu tiên: running > waiting > done > idle.
 
-const BADGE_COLORS = {
-  idle: "#666666",
-  running: "#f5b414",
-  waiting: "#e63228",
-  done: "#28b446",
+const LABELS = {
+  idle: "Chưa hoạt động",
+  running: "Đang trả lời",
+  waiting: "Chờ xác nhận",
+  done: "Đã xong",
 };
+
+const BADGE_COLORS = { idle: "#666666", running: "#f5b414", waiting: "#e63228", done: "#28b446" };
 
 const ICONS = {
   idle: { 16: "icons/gray-16.png", 48: "icons/gray-48.png", 128: "icons/gray-128.png" },
@@ -15,56 +18,43 @@ const ICONS = {
   done: { 16: "icons/green-16.png", 48: "icons/green-48.png", 128: "icons/green-128.png" },
 };
 
-let ws = null;
+const PRIORITY = { running: 3, waiting: 4, done: 2, idle: 1 };
 
-async function applyState(state) {
-  const status = state.status || "idle";
+const tabStates = new Map(); // tabId -> status string
+
+function aggregate() {
+  let best = "idle";
+  for (const status of tabStates.values()) {
+    if ((PRIORITY[status] || 0) > (PRIORITY[best] || 0)) best = status;
+  }
+  return best;
+}
+
+async function applyStatus(status) {
+  const state = { status, message: LABELS[status] || "", updatedAt: Date.now() };
   await chrome.storage.local.set({ lastState: state });
   chrome.action.setIcon({ path: ICONS[status] || ICONS.idle });
   chrome.action.setBadgeBackgroundColor({ color: BADGE_COLORS[status] || BADGE_COLORS.idle });
   chrome.action.setBadgeText({ text: status === "idle" ? "" : "●" });
-  chrome.action.setTitle({ title: `Claude: ${status}${state.message ? " — " + state.message : ""}` });
+  chrome.action.setTitle({ title: `Claude: ${LABELS[status] || status}` });
 }
 
-function connect() {
-  if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) return;
-  try {
-    ws = new WebSocket(SERVER_WS);
-    ws.onmessage = (evt) => {
-      try {
-        applyState(JSON.parse(evt.data));
-      } catch (e) {
-        /* ignore malformed */
-      }
-    };
-    ws.onclose = () => {
-      ws = null;
-    };
-    ws.onerror = () => {
-      try { ws.close(); } catch (e) {}
-    };
-  } catch (e) {
-    ws = null;
-  }
-}
-
-async function pollOnce() {
-  try {
-    const res = await fetch(SERVER_HTTP);
-    if (res.ok) applyState(await res.json());
-  } catch (e) {
-    // server chưa chạy — bỏ qua
-  }
-  connect();
-}
-
-chrome.runtime.onInstalled.addListener(() => {
-  chrome.alarms.create("keepalive", { periodInMinutes: 1 });
-  pollOnce();
-});
-chrome.runtime.onStartup.addListener(pollOnce);
-chrome.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name === "keepalive") pollOnce();
+chrome.runtime.onMessage.addListener((msg, sender) => {
+  if (msg.type !== "claude-status" || !sender.tab) return;
+  tabStates.set(sender.tab.id, msg.status);
+  applyStatus(aggregate());
 });
 
-pollOnce();
+chrome.tabs.onRemoved.addListener((tabId) => {
+  if (tabStates.delete(tabId)) applyStatus(aggregate());
+});
+
+chrome.runtime.onInstalled.addListener(async () => {
+  const { widgetSettings } = await chrome.storage.local.get("widgetSettings");
+  if (!widgetSettings) {
+    await chrome.storage.local.set({
+      widgetSettings: { enabled: true, mode: 1, opacity: 1, position: "top-right" },
+    });
+  }
+  applyStatus("idle");
+});

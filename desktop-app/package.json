@@ -5,21 +5,42 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "dist:win": "electron-builder --win"
+    "dist:win": "electron-builder --win",
+    "dist:mac": "electron-builder --mac",
+    "dist:linux": "electron-builder --linux"
   },
   "dependencies": {
     "ws": "^8.18.0"
   },
   "devDependencies": {
+    "@electron/notarize": "^2.2.1",
     "electron": "^31.0.0",
     "electron-builder": "^24.13.3"
   },
   "build": {
     "appId": "com.vuicoding.claudetrafficlight",
     "productName": "Claude Traffic Light",
+    "directories": {
+      "output": "release"
+    },
     "win": {
       "target": ["portable"],
       "icon": "assets/green-256.png"
+    },
+    "mac": {
+      "target": ["dmg"],
+      "icon": "assets/green-256.png",
+      "category": "public.app-category.developer-tools",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist"
+    },
+    "afterSign": "scripts/notarize.js",
+    "linux": {
+      "target": ["AppImage", "tar.gz"],
+      "icon": "assets/green-256.png",
+      "category": "Development"
     },
     "extraResources": [
       { "from": "assets/connect-claude.ps1", "to": "connect-claude.ps1" }

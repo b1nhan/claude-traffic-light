@@ -1,0 +1,46 @@
+name: Build desktop app
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: macos-latest
+            script: dist:mac
+            artifact: mac-dmg
+          - os: ubuntu-latest
+            script: dist:linux
+            artifact: linux-build
+          - os: windows-latest
+            script: dist:win
+            artifact: windows-portable
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: desktop-app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - run: npm run ${{ matrix.script }}
+        env:
+          # No Apple Developer cert configured yet — build unsigned.
+          # Set APPLE_ID / APPLE_APP_SPECIFIC_PASSWORD / APPLE_TEAM_ID secrets
+          # and a signing identity (CSC_LINK + CSC_KEY_PASSWORD) to sign & notarize.
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: |
+            desktop-app/release/*.dmg
+            desktop-app/release/*.AppImage
+            desktop-app/release/*.tar.gz
+            desktop-app/release/*.exe
