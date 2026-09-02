@@ -3,7 +3,7 @@ const promptTextarea = document.getElementById("promptText");
 // Load hooks configuration for Step 3
 window.trafficLight.getHooksJson().then((hooksJson) => {
   promptTextarea.value =
-    'Hãy thêm các hooks sau vào file ~/.claude/settings.json của tôi (tạo file/thư mục nếu ' +
+    "Hãy thêm các hooks sau vào file ~/.claude/settings.json của tôi (tạo file/thư mục nếu " +
     'chưa có, GIỮ NGUYÊN các cấu hình khác đã có trong file, chỉ merge thêm object "hooks" ' +
     "bên dưới — nếu event nào đã có hook thì thêm nối vào mảng, đừng ghi đè). Sau khi xong, " +
     "nhắc tôi khởi động lại Claude Code.\n\n" +
@@ -38,18 +38,20 @@ document.getElementById("btnShowScript").addEventListener("click", async () => {
 
 document.getElementById("btnCopyCmd").addEventListener("click", async () => {
   const scriptPath = await window.trafficLight.getScriptPath();
-  window.trafficLight.copyText(`powershell -ExecutionPolicy Bypass -File "${scriptPath}"`);
+  window.trafficLight.copyText(
+    `powershell -ExecutionPolicy Bypass -File "${scriptPath}"`,
+  );
   const resultEl = document.getElementById("scriptResult");
-  resultEl.textContent = "Copy xong rồi, dán vào PowerShell rồi Enter là chạy.";
-  setTimeout(() => resultEl.textContent = "", 3000);
+  resultEl.textContent = "Đã copy.";
+  setTimeout(() => (resultEl.textContent = ""), 3000);
 });
 
 // Step 3: Copy Prompt
 document.getElementById("btnCopyPrompt").addEventListener("click", () => {
   window.trafficLight.copyText(promptTextarea.value);
   const resultEl = document.getElementById("promptResult");
-  resultEl.textContent = "Copy xong rồi, dán vào Claude Code là được.";
-  setTimeout(() => resultEl.textContent = "", 3000);
+  resultEl.textContent = "Đã copy.";
+  setTimeout(() => (resultEl.textContent = ""), 3000);
 });
 
 // Accordion Logic
@@ -57,16 +59,16 @@ function setupAccordion(id) {
   const head = document.getElementById(`acc${id}-head`);
   const body = document.getElementById(`acc${id}-body`);
   const icon = document.getElementById(`acc${id}-icon`);
-  head.addEventListener('click', () => {
-    const isHidden = body.classList.contains('hidden');
+  head.addEventListener("click", () => {
+    const isHidden = body.classList.contains("hidden");
     // Hide all
     for (let i = 1; i <= 3; i++) {
-      document.getElementById(`acc${i}-body`).classList.add('hidden');
+      document.getElementById(`acc${i}-body`).classList.add("hidden");
       document.getElementById(`acc${i}-icon`).textContent = "▶";
     }
     // Toggle current
     if (isHidden) {
-      body.classList.remove('hidden');
+      body.classList.remove("hidden");
       icon.textContent = "▼";
     }
   });
@@ -86,8 +88,8 @@ const INFO = {
 };
 const MODE_DESCS = [
   "3 ô đèn kèm nhãn trạng thái. Đây là dáng widget sẽ nằm trên desktop của bạn.",
-  "Vẫn 3 ô đèn nhưng bỏ chữ cho gọn — rê chuột vào là thấy trạng thái ngay.",
-  "Chỉ còn 1 ô đèn đổi màu. Nhỏ gọn nhất, hợp lúc màn hình đang chật chỗ."
+  "Vẫn 3 ô đèn nhưng cho gọn hơn.",
+  "Rút gọn chỉ còn 1 ô đèn.",
 ];
 
 let currentMode = 1;
@@ -99,32 +101,38 @@ function updateMode(mode) {
   for (let i = 1; i <= 3; i++) {
     const tab = document.getElementById(`tab-mode-${i}`);
     if (i === mode) {
-      tab.classList.add('active');
+      tab.classList.add("active");
     } else {
-      tab.classList.remove('active');
+      tab.classList.remove("active");
     }
-    
+
     // Update preview visibility
     const preview = document.getElementById(`preview-mode-${i}`);
     if (i === mode) {
-      preview.classList.remove('hidden');
+      preview.classList.remove("hidden");
     } else {
-      preview.classList.add('hidden');
+      preview.classList.add("hidden");
     }
   }
-  
+
   // Update description
   document.getElementById("mode-desc").textContent = MODE_DESCS[mode - 1];
-  
+
   // Update backend (if full feature supported)
   if (window.trafficLight && window.trafficLight.setMode) {
     window.trafficLight.setMode(mode);
   }
 }
 
-document.getElementById("tab-mode-1").addEventListener('click', () => updateMode(1));
-document.getElementById("tab-mode-2").addEventListener('click', () => updateMode(2));
-document.getElementById("tab-mode-3").addEventListener('click', () => updateMode(3));
+document
+  .getElementById("tab-mode-1")
+  .addEventListener("click", () => updateMode(1));
+document
+  .getElementById("tab-mode-2")
+  .addEventListener("click", () => updateMode(2));
+document
+  .getElementById("tab-mode-3")
+  .addEventListener("click", () => updateMode(3));
 
 // Preview Status Update Logic (Test buttons)
 function updatePreviewStatus(status) {
@@ -132,9 +140,12 @@ function updatePreviewStatus(status) {
   const info = INFO[status] || INFO.idle;
 
   // Mode 1 updates
-  document.getElementById("m1-dot-red").style.background = status === "waiting" ? ON.red : OFF.red;
-  document.getElementById("m1-dot-yellow").style.background = status === "running" ? ON.yellow : OFF.yellow;
-  document.getElementById("m1-dot-green").style.background = status === "done" ? ON.green : OFF.green;
+  document.getElementById("m1-dot-red").style.background =
+    status === "waiting" ? ON.red : OFF.red;
+  document.getElementById("m1-dot-yellow").style.background =
+    status === "running" ? ON.yellow : OFF.yellow;
+  document.getElementById("m1-dot-green").style.background =
+    status === "done" ? ON.green : OFF.green;
 
   const m1LabelBox = document.getElementById("m1-label-box");
   const m1Label = document.getElementById("m1-label");
@@ -143,26 +154,48 @@ function updatePreviewStatus(status) {
   m1Label.textContent = info.label;
 
   // Mode 2 updates
-  document.getElementById("m2-dot-red").style.background = status === "waiting" ? ON.red : OFF.red;
-  document.getElementById("m2-dot-yellow").style.background = status === "running" ? ON.yellow : OFF.yellow;
-  document.getElementById("m2-dot-green").style.background = status === "done" ? ON.green : OFF.green;
+  document.getElementById("m2-dot-red").style.background =
+    status === "waiting" ? ON.red : OFF.red;
+  document.getElementById("m2-dot-yellow").style.background =
+    status === "running" ? ON.yellow : OFF.yellow;
+  document.getElementById("m2-dot-green").style.background =
+    status === "done" ? ON.green : OFF.green;
 
   // Mode 3 updates
-  const activeColor = status === "waiting" ? ON.red : (status === "running" ? ON.yellow : (status === "done" ? ON.green : "#5C564C"));
+  const activeColor =
+    status === "waiting"
+      ? ON.red
+      : status === "running"
+        ? ON.yellow
+        : status === "done"
+          ? ON.green
+          : "#5C564C";
   document.getElementById("m3-dot").style.background = activeColor;
 
   // Test button selected state
-  document.getElementById("test-red").classList.toggle("selected", status === "waiting");
-  document.getElementById("test-yellow").classList.toggle("selected", status === "running");
-  document.getElementById("test-green").classList.toggle("selected", status === "done");
+  document
+    .getElementById("test-red")
+    .classList.toggle("selected", status === "waiting");
+  document
+    .getElementById("test-yellow")
+    .classList.toggle("selected", status === "running");
+  document
+    .getElementById("test-green")
+    .classList.toggle("selected", status === "done");
 }
 
-document.getElementById("test-red").addEventListener('click', () => updatePreviewStatus('waiting'));
-document.getElementById("test-yellow").addEventListener('click', () => updatePreviewStatus('running'));
-document.getElementById("test-green").addEventListener('click', () => updatePreviewStatus('done'));
+document
+  .getElementById("test-red")
+  .addEventListener("click", () => updatePreviewStatus("waiting"));
+document
+  .getElementById("test-yellow")
+  .addEventListener("click", () => updatePreviewStatus("running"));
+document
+  .getElementById("test-green")
+  .addEventListener("click", () => updatePreviewStatus("done"));
 
 // Nút thứ 4: đồng bộ preview về đúng trạng thái thật hiện tại của Claude
-document.getElementById("test-sync").addEventListener('click', () => {
+document.getElementById("test-sync").addEventListener("click", () => {
   window.trafficLight && window.trafficLight.requestCurrentState();
 });
 
@@ -214,16 +247,20 @@ positionGridEl.addEventListener("click", (e) => {
 
 // Sync initial mode + widget settings from backend
 if (window.trafficLight) {
-  window.trafficLight.onModeUpdate && window.trafficLight.onModeUpdate((mode) => {
-    updateMode(mode);
-  });
-  window.trafficLight.onStateUpdate && window.trafficLight.onStateUpdate((state) => {
-    updatePreviewStatus(state.status || "idle");
-  });
-  window.trafficLight.requestCurrentState && window.trafficLight.requestCurrentState();
-  window.trafficLight.getWidgetSettings && window.trafficLight.getWidgetSettings().then((settings) => {
-    setToggleUI(settings.alwaysOnTop);
-    setOpacityUI(settings.opacity);
-    setPositionUI(settings.position);
-  });
+  window.trafficLight.onModeUpdate &&
+    window.trafficLight.onModeUpdate((mode) => {
+      updateMode(mode);
+    });
+  window.trafficLight.onStateUpdate &&
+    window.trafficLight.onStateUpdate((state) => {
+      updatePreviewStatus(state.status || "idle");
+    });
+  window.trafficLight.requestCurrentState &&
+    window.trafficLight.requestCurrentState();
+  window.trafficLight.getWidgetSettings &&
+    window.trafficLight.getWidgetSettings().then((settings) => {
+      setToggleUI(settings.alwaysOnTop);
+      setOpacityUI(settings.opacity);
+      setPositionUI(settings.position);
+    });
 }

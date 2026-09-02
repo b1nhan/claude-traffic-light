@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Claude Traffic Light — Cài đặt</title>
+    <title>Claude Traffic Light — Home</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
     <link
@@ -290,7 +290,7 @@
             letter-spacing: 0.2px;
           "
         >
-          Claude Traffic Light — Cài đặt
+          Claude Traffic Light — Home
         </div>
       </div>
 
@@ -330,7 +330,7 @@
             <div style="display: flex; align-items: flex-start; gap: 14px">
               <div
                 style="
-                  width: 44px;
+                  width: 49px;
                   height: 60px;
                   flex: none;
                   border: 3px solid #141413;
@@ -365,8 +365,29 @@
                     text-wrap: pretty;
                   "
                 >
-                  Biến Claude Code thành cái đèn giao thông thật ngoài đời, chạy
-                  gọn trên máy bạn, khỏi cần dựng server riêng.
+                  Đèn giao thông cho Claude Code. Giúp bạn quan sát trạng thái
+                  hiện tại của Claude dễ dàng hơn.
+                  <ul>
+                    <li>
+                      <span style="color: #c6553f; font-weight: bold"
+                        >Màu đỏ</span
+                      >
+                      là Claude đang cần xác nhận thông tin
+                    </li>
+                    <li>
+                      <span style="color: #d9a441; font-weight: bold"
+                        >Màu vàng</span
+                      >
+                      là Claude đang chạy
+                    </li>
+                    <li>
+                      <span style="color: #7a9e6b; font-weight: bold"
+                        >Màu xanh</span
+                      >
+                      là Claude đã xong việc
+                    </li>
+                  </ul>
+                  Có thể hiển thị dưới dạng Widget hoặc ở trên System Tray.
                 </div>
               </div>
             </div>
@@ -393,7 +414,6 @@
                     width: 12px;
                     height: 12px;
                     background: #c6553f;
-                    box-shadow: inset -3px -3px 0 rgba(0, 0, 0, 0.18);
                     border-radius: 50%;
                   "
                 ></div>
@@ -418,7 +438,6 @@
                     width: 12px;
                     height: 12px;
                     background: #d9a441;
-                    box-shadow: inset -3px -3px 0 rgba(0, 0, 0, 0.18);
                     border-radius: 50%;
                   "
                 ></div>
@@ -443,7 +462,6 @@
                     width: 12px;
                     height: 12px;
                     background: #7a9e6b;
-                    box-shadow: inset -3px -3px 0 rgba(0, 0, 0, 0.18);
                     border-radius: 50%;
                   "
                 ></div>
@@ -505,7 +523,7 @@
               margin-top: 2px;
             "
           >
-            3 CÁCH ĐỂ GẮN VỚI CLAUDE CODE
+            3 CÁCH ĐỂ KẾT NỐI VỚI CLAUDE CODE
           </div>
 
           <div style="display: flex; flex-direction: column; gap: 7px">
@@ -591,7 +609,7 @@
                     "
                     >~/.claude/settings.json</span
                   >
-                  giúp bạn. Làm một lần, xong luôn.
+                  giúp bạn. Plug and play :b
                 </div>
                 <div
                   style="
@@ -707,9 +725,8 @@
                       border-radius: 4px;
                     "
                     >connect-claude.ps1</span
-                  >, chuột phải file đó rồi chọn <b>Run với PowerShell</b>. Ngại
-                  thao tác tay thì copy lệnh bên dưới, dán thẳng vào PowerShell
-                  cũng được.
+                  >, chuột phải file đó rồi chọn <b>Run với PowerShell</b>. Hoặc
+                  có thể copy lệnh bên dưới và dán vào PowerShell để chạy.
                 </div>
                 <div
                   style="
@@ -823,8 +840,8 @@
                     text-wrap: pretty;
                   "
                 >
-                  Copy đoạn prompt bên dưới, dán vào Claude Code — nó sẽ tự đọc
-                  và cấu hình hộ bạn luôn.
+                  Copy đoạn prompt bên dưới, dán vào Claude Code — Claude sẽ tự
+                  đọc và cấu hình hộ bạn hẹ hẹ.
                 </div>
                 <textarea
                   id="promptText"
@@ -880,7 +897,7 @@
           </div>
 
           <div style="font-size: 11.5px; color: #8c8579; line-height: 1.4">
-            Xong 1 trong 3 cách rồi thì nhớ
+            Sau khi setup xong thì
             <b style="color: #4a453d">khởi động lại Claude Code</b> để áp dụng
             nhé.
           </div>
@@ -926,7 +943,7 @@
               "
             >
               <div style="font-size: 11px; color: #4a453d; font-weight: 600">
-                ☕ Mời mình ly cà phê
+                ☕ Mời mình ly cà hê
               </div>
               <!-- TODO: thay ô này bằng ảnh QR donate thật khi có link -->
               <div
@@ -981,9 +998,9 @@
                 flex: none;
               "
             >
-              <div class="tab-btn active" id="tab-mode-1">MODE 1</div>
-              <div class="tab-btn" id="tab-mode-2">MODE 2</div>
-              <div class="tab-btn" id="tab-mode-3">MODE 3</div>
+              <div class="tab-btn active" id="tab-mode-1">STANDARD</div>
+              <div class="tab-btn" id="tab-mode-2">COMPACT</div>
+              <div class="tab-btn" id="tab-mode-3">MINIMAL</div>
             </div>
 
             <div
@@ -1235,7 +1252,7 @@
               style="display: flex; align-items: center; gap: 9px; flex: none"
             >
               <div style="font-size: 12.5px; color: #4a453d; font-weight: 600">
-                Luôn nổi
+                Always on Top
               </div>
               <div id="toggleTop" class="toggle-switch on">
                 <div class="knob"></div>
@@ -1269,7 +1286,7 @@
                   flex: none;
                 "
               >
-                Độ mờ
+                Opacity
               </div>
               <div
                 id="opacityGrid"

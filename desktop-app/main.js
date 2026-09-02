@@ -1,4 +1,13 @@
-const { app, BrowserWindow, Tray, Menu, screen, ipcMain, shell } = require("electron");
+const {
+  app,
+  BrowserWindow,
+  Tray,
+  Menu,
+  screen,
+  ipcMain,
+  shell,
+  clipboard,
+} = require("electron");
 const path = require("path");
 const fs = require("fs");
 const os = require("os");
@@ -143,7 +152,7 @@ if (!app.requestSingleInstanceLock()) {
     }
     setupWin = new BrowserWindow({
       width: 1200,
-      height: 800,
+      height: 900,
       resizable: false,
       title: "Claude Traffic Light — Hướng dẫn & Cài đặt",
       webPreferences: {
@@ -174,7 +183,7 @@ if (!app.requestSingleInstanceLock()) {
   function updateTrayMenu() {
     const contextMenu = Menu.buildFromTemplate([
       {
-        label: "Mode 1",
+        label: "Standard",
         type: "radio",
         checked: currentMode === 1,
         click: () => {
@@ -184,7 +193,7 @@ if (!app.requestSingleInstanceLock()) {
         },
       },
       {
-        label: "Mode 2",
+        label: "Compact",
         type: "radio",
         checked: currentMode === 2,
         click: () => {
@@ -194,7 +203,7 @@ if (!app.requestSingleInstanceLock()) {
         },
       },
       {
-        label: "Mode 3",
+        label: "Minimal",
         type: "radio",
         checked: currentMode === 3,
         click: () => {
@@ -307,6 +316,14 @@ if (!app.requestSingleInstanceLock()) {
   ipcMain.handle("get-hooks-json", () =>
     JSON.stringify({ hooks: HOOKS }, null, 2),
   );
+
+  // clipboard/shell không available trong sandboxed preload (Electron 31) —
+  // phải gọi qua IPC ở main process thay vì require thẳng trong preload.js.
+  ipcMain.handle("copy-text", (event, text) => clipboard.writeText(text));
+  ipcMain.handle("show-item-in-folder", (event, p) =>
+    shell.showItemInFolder(p),
+  );
+  ipcMain.handle("open-path", (event, p) => shell.openPath(p));
 
   ipcMain.on("set-mode", (event, mode) => {
     applyMode(mode);
