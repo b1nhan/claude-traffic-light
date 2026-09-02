@@ -1,8 +1,8 @@
 const LABELS = {
   idle: "Chưa hoạt động",
-  running: "Claude Code đang chạy",
+  running: "Claude đang trả lời",
   waiting: "Chờ xác nhận",
-  done: "Task đã xong",
+  done: "Đã xong",
 };
 
 const dot = document.getElementById("dot");
@@ -16,15 +16,15 @@ function render(state) {
   message.textContent = state.message || "";
 }
 
-async function load() {
-  try {
-    const res = await fetch("http://localhost:7317/status");
-    const state = await res.json();
-    render(state);
-  } catch (e) {
-    title.textContent = "Không kết nối được server";
-    message.textContent = "Hãy chắc chắn server đang chạy ở port 7317";
-  }
-}
+chrome.storage.local.get("lastState").then(({ lastState }) => {
+  render(lastState || { status: "idle" });
+});
 
-load();
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === "local" && changes.lastState) render(changes.lastState.newValue);
+});
+
+document.getElementById("openOptions").addEventListener("click", (e) => {
+  e.preventDefault();
+  chrome.runtime.openOptionsPage();
+});

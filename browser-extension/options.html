@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<title>Claude Traffic Light — Cài đặt</title>
+<style>
+  body { margin: 0; padding: 24px; background: #efebe3; font-family: -apple-system, "Segoe UI", Arial, sans-serif;
+    color: #141413; max-width: 480px; }
+  h1 { font-size: 15px; margin: 0 0 4px; }
+  p.hint { font-size: 12px; color: #8c8579; margin: 0 0 18px; }
+  .row { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-top: 1px solid #e3ddd2; }
+  .row:first-of-type { border-top: none; }
+  .label { font-size: 13px; font-weight: 600; width: 90px; flex: none; }
+  .mode-previews { display: flex; gap: 10px; }
+  .mode-card { border: 2px solid #c9c1b4; background: #fffdf9; padding: 10px 12px; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 8px; width: 88px; box-sizing: border-box; }
+  .mode-card:hover { border-color: #d9a441; }
+  .mode-card.active { border-color: #141413; box-shadow: 3px 3px 0 #141413; }
+  .mode-card .mini-dots { display: flex; flex-direction: column; gap: 4px; padding: 6px; background: #1a1917; border: 2px solid #141413; }
+  .mode-card .mini-dot { width: 14px; height: 14px; background: #4a3b37; }
+  .mode-card .mini-dot.mini-yellow { background: #463d2c; }
+  .mode-card .mini-dot.mini-green { background: #334030; }
+  .mode-card .mini-dot.on-red { background: #c6553f; }
+  .mode-card .mini-label { border: 1px solid #e08a72; background: #0d0c0b; color: #e08a72; font-size: 7px;
+    font-weight: 800; padding: 3px 6px; letter-spacing: .4px; }
+  .mode-card .mini-single-box { padding: 6px; background: #1a1917; border: 2px solid #141413; }
+  .mode-card .mini-single-dot { width: 14px; height: 14px; background: #c6553f; }
+  .mode-card .mode-name { font-size: 10px; font-weight: 800; color: #8c8579; letter-spacing: .5px; }
+  .toggle { width: 40px; height: 20px; border: 2px solid #141413; cursor: pointer; display: flex;
+    align-items: center; padding: 2px; }
+  .toggle .knob { width: 12px; height: 12px; background: #141413; transition: margin .15s; }
+  .toggle.on { background: #7a9e6b; justify-content: flex-end; }
+  .toggle.off { background: #d9cfc0; justify-content: flex-start; }
+  #opacityGrid { display: flex; gap: 3px; }
+  .op-cell { width: 22px; height: 18px; border: 1px solid #c9c1b4; background: #efebe3; cursor: pointer; }
+  .op-cell.active { background: #141413; }
+  #positionGrid { display: grid; grid-template-columns: repeat(3, 18px); grid-template-rows: repeat(3, 18px); gap: 3px; }
+  .pos-cell { border: 1px solid #c9c1b4; background: #efebe3; cursor: pointer; }
+  .pos-cell:hover { background: #d9a441; }
+  .pos-cell.active { background: #c6553f; }
+  #opacityLabel { font-size: 11px; color: #8c8579; width: 36px; }
+</style>
+</head>
+<body>
+  <h1>Claude Traffic Light</h1>
+  <p class="hint">Widget nổi hiển thị trạng thái claude.ai trên mọi trang web khác. Không cần server — chỉ cần mở một tab claude.ai, extension tự theo dõi.</p>
+
+  <div class="row">
+    <div class="label">Bật widget</div>
+    <div id="toggleEnabled" class="toggle on"><div class="knob"></div></div>
+  </div>
+
+  <div class="row" style="align-items: flex-start">
+    <div class="label" style="padding-top: 4px">Kiểu hiển thị</div>
+    <div class="mode-previews">
+      <div class="mode-card active" data-mode="1">
+        <div class="mini-dots">
+          <div class="mini-dot on-red"></div>
+          <div class="mini-dot mini-yellow"></div>
+          <div class="mini-dot mini-green"></div>
+        </div>
+        <div class="mini-label">CHỜ XÁC NHẬN</div>
+        <div class="mode-name">STANDARD</div>
+      </div>
+      <div class="mode-card" data-mode="2">
+        <div class="mini-dots">
+          <div class="mini-dot on-red"></div>
+          <div class="mini-dot mini-yellow"></div>
+          <div class="mini-dot mini-green"></div>
+        </div>
+        <div class="mode-name">COMPACT</div>
+      </div>
+      <div class="mode-card" data-mode="3">
+        <div class="mini-single-box"><div class="mini-single-dot"></div></div>
+        <div class="mode-name">MINIMAL</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="label">Độ mờ</div>
+    <div id="opacityGrid">
+      <div class="op-cell" data-step="1"></div>
+      <div class="op-cell" data-step="2"></div>
+      <div class="op-cell" data-step="3"></div>
+      <div class="op-cell" data-step="4"></div>
+      <div class="op-cell" data-step="5"></div>
+    </div>
+    <div id="opacityLabel">100%</div>
+  </div>
+
+  <div class="row">
+    <div class="label">Vị trí</div>
+    <div id="positionGrid">
+      <div class="pos-cell" data-pos="top-left"></div>
+      <div class="pos-cell" data-pos="top-center"></div>
+      <div class="pos-cell" data-pos="top-right"></div>
+      <div class="pos-cell" data-pos="middle-left"></div>
+      <div class="pos-cell" data-pos="middle-center"></div>
+      <div class="pos-cell" data-pos="middle-right"></div>
+      <div class="pos-cell" data-pos="bottom-left"></div>
+      <div class="pos-cell" data-pos="bottom-center"></div>
+      <div class="pos-cell" data-pos="bottom-right"></div>
+    </div>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>
