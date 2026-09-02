@@ -38,7 +38,7 @@
     },
     "afterSign": "scripts/notarize.js",
     "linux": {
-      "target": ["tar.gz"],
+      "target": ["AppImage", "tar.gz"],
       "icon": "assets/green-256.png",
       "category": "Development"
     },
