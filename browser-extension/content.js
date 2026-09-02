@@ -36,6 +36,7 @@
       <style>
         .wrap { display: flex; flex-direction: column; align-items: center; gap: 8px;
           font-family: -apple-system, "Segoe UI", Arial, sans-serif; user-select: none; }
+        .full-layout { display: flex; flex-direction: column; align-items: center; gap: 8px; }
         .dots { border: 3px solid rgba(20,20,19,var(--bg-a,1)); background: rgba(26,25,23,var(--bg-a,1));
           box-shadow: 5px 5px 0 rgba(0,0,0,calc(0.3 * var(--bg-a,1))); padding: 10px; box-sizing: border-box;
           display: flex; flex-direction: column; gap: 7px; }
