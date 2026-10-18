@@ -55,6 +55,10 @@
       {
         "from": "assets/connect-claude.ps1",
         "to": "connect-claude.ps1"
+      },
+      {
+        "from": "assets/connect-claude.sh",
+        "to": "connect-claude.sh"
       }
     ]
   },
