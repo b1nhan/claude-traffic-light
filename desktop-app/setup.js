@@ -30,14 +30,18 @@ document.getElementById("btnConnect").addEventListener("click", async () => {
   }
 });
 
-// Step 2 (script PowerShell) chỉ có ý nghĩa trên Windows — ẩn trên macOS/Linux.
+// Step 2: script dự phòng — PowerShell trên Windows, bash (.sh) trên Linux/macOS.
+let isWindows = true;
 window.trafficLight.getPlatform().then((platform) => {
-  if (platform !== "win32") {
-    document.getElementById("acc2-head").parentElement.classList.add("hidden");
+  isWindows = platform === "win32";
+  if (!isWindows) {
+    document.getElementById("acc2-title").textContent = "Chạy script bằng terminal";
+    document.getElementById("acc2-desc").innerHTML =
+      "Mở thư mục chứa <b>connect-claude.sh</b> rồi chạy bằng terminal (cần <b>python3</b>), " +
+      "hoặc copy lệnh bên dưới và dán vào terminal.";
   }
 });
 
-// Step 2: Script PowerShell
 document.getElementById("btnShowScript").addEventListener("click", async () => {
   const scriptPath = await window.trafficLight.getScriptPath();
   window.trafficLight.showItemInFolder(scriptPath);
@@ -46,7 +50,9 @@ document.getElementById("btnShowScript").addEventListener("click", async () => {
 document.getElementById("btnCopyCmd").addEventListener("click", async () => {
   const scriptPath = await window.trafficLight.getScriptPath();
   window.trafficLight.copyText(
-    `powershell -ExecutionPolicy Bypass -File "${scriptPath}"`,
+    isWindows
+      ? `powershell -ExecutionPolicy Bypass -File "${scriptPath}"`
+      : `bash "${scriptPath}"`,
   );
   const resultEl = document.getElementById("scriptResult");
   resultEl.textContent = "Đã copy.";

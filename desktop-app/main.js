@@ -329,9 +329,10 @@ if (!app.requestSingleInstanceLock()) {
   }
 
   function getScriptPath() {
+    const name = IS_WINDOWS ? "connect-claude.ps1" : "connect-claude.sh";
     return app.isPackaged
-      ? path.join(process.resourcesPath, "connect-claude.ps1")
-      : path.join(__dirname, "assets", "connect-claude.ps1");
+      ? path.join(process.resourcesPath, name)
+      : path.join(__dirname, "assets", name);
   }
 
   ipcMain.handle("connect-claude", async () => {
