@@ -30,6 +30,13 @@ document.getElementById("btnConnect").addEventListener("click", async () => {
   }
 });
 
+// Step 2 (script PowerShell) chỉ có ý nghĩa trên Windows — ẩn trên macOS/Linux.
+window.trafficLight.getPlatform().then((platform) => {
+  if (platform !== "win32") {
+    document.getElementById("acc2-head").parentElement.classList.add("hidden");
+  }
+});
+
 // Step 2: Script PowerShell
 document.getElementById("btnShowScript").addEventListener("click", async () => {
   const scriptPath = await window.trafficLight.getScriptPath();

@@ -33,10 +33,8 @@ DOM của trang — hai nguồn dữ liệu khác nhau, không liên quan tới 
 
 - Đã có build sẵn ở [Releases](https://github.com/b1nhan/claude-traffic-light/releases/latest) — chỉ cần tải, không cần cài gì thêm.
 - Muốn tự chạy từ source: Node.js 18+ (tải tại nodejs.org).
-- Claude Code chạy trên máy có PowerShell (mặc định có sẵn trên Windows; trên macOS/Linux cần cài
-  [PowerShell 7](https://github.com/PowerShell/PowerShell) nếu muốn dùng nút "Connect to Claude" tự
-  động — hook mặc định dùng lệnh PowerShell. Nếu không có PowerShell, xem "Cách thủ công" ở mục 5 để
-  đổi sang `curl`).
+- Nút "Connect to Claude" tự chọn hook theo hệ điều hành: PowerShell trên Windows, `curl` trên
+  macOS/Linux (không cần cài PowerShell; máy cần có sẵn `curl`).
 - Google Chrome hoặc Microsoft Edge (cho phần extension).
 
 ---
@@ -83,7 +81,7 @@ hệ điều hành:
 |---|---|
 | Windows | `Claude Traffic Light 1.0.0.exe` (portable, double-click chạy thẳng, không cần cài) |
 | macOS (Apple Silicon) | `Claude Traffic Light-1.0.0-arm64.dmg` |
-| Linux | `.AppImage` (chạy thẳng) hoặc `.tar.gz` (giải nén rồi chạy) |
+| Linux | `.AppImage` (chạy thẳng), `.deb` (`sudo apt install ./file.deb`) hoặc `.tar.gz` (giải nén rồi chạy). Bật "Khởi động cùng hệ thống" trong menu tray nếu muốn tự chạy khi đăng nhập |
 
 Windows SmartScreen / macOS Gatekeeper có thể cảnh báo "Unknown Publisher" ở lần chạy đầu (app chưa
 ký code-signing) — chọn **More info → Run anyway** (Windows) hoặc **chuột phải → Open** (macOS) là
@@ -107,7 +105,7 @@ npm start
 ```bash
 npm run dist:win     # Windows — output: desktop-app/release/*.exe (portable)
 npm run dist:mac     # macOS  — output: desktop-app/release/*.dmg
-npm run dist:linux   # Linux  — output: desktop-app/release/*.AppImage, *.tar.gz
+npm run dist:linux   # Linux  — output: desktop-app/release/*.AppImage, *.deb, *.tar.gz
 ```
 
 Mỗi lệnh cần chạy **trên đúng hệ điều hành tương ứng** (hoặc qua CI — xem
@@ -182,4 +180,3 @@ Sau khi lưu file, khởi động lại Claude Code. Giờ mỗi khi Claude ch�
 
 - Thêm sự kiện `SessionStart` → set về `idle` khi mở phiên mới.
 - Thêm âm thanh "ting" khi chuyển sang `waiting` (dùng `Audio` trong renderer.js).
-- Cross-platform hook mặc định (tự chọn PowerShell/curl theo OS) thay vì hard-code PowerShell trong `hooksConfig.js`.

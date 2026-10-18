@@ -24,11 +24,15 @@
       "output": "release"
     },
     "win": {
-      "target": ["portable"],
+      "target": [
+        "portable"
+      ],
       "icon": "assets/green-256.png"
     },
     "mac": {
-      "target": ["dmg"],
+      "target": [
+        "dmg"
+      ],
       "icon": "assets/green-1024.png",
       "category": "public.app-category.developer-tools",
       "hardenedRuntime": true,
@@ -38,12 +42,25 @@
     },
     "afterSign": "scripts/notarize.js",
     "linux": {
-      "target": ["AppImage", "tar.gz"],
+      "target": [
+        "AppImage",
+        "deb",
+        "tar.gz"
+      ],
       "icon": "assets/green-256.png",
-      "category": "Development"
+      "category": "Development",
+      "synopsis": "Đèn giao thông hiển thị trạng thái Claude Code"
     },
     "extraResources": [
-      { "from": "assets/connect-claude.ps1", "to": "connect-claude.ps1" }
+      {
+        "from": "assets/connect-claude.ps1",
+        "to": "connect-claude.ps1"
+      }
     ]
-  }
+  },
+  "author": {
+    "name": "b1nhan",
+    "email": "sukiakira1411@gmail.com"
+  },
+  "homepage": "https://github.com/b1nhan/claude-traffic-light"
 }

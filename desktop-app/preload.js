@@ -23,6 +23,7 @@ contextBridge.exposeInMainWorld("trafficLight", {
   },
 
   connectClaude: () => ipcRenderer.invoke("connect-claude"),
+  getPlatform: () => ipcRenderer.invoke("get-platform"),
   getScriptPath: () => ipcRenderer.invoke("get-script-path"),
   getHooksJson: () => ipcRenderer.invoke("get-hooks-json"),
 

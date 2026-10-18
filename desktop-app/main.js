@@ -12,7 +12,7 @@ const path = require("path");
 const fs = require("fs");
 const os = require("os");
 const { startStatusServer } = require("./statusServer");
-const { HOOKS, PORT } = require("./hooksConfig");
+const { HOOKS, PORT, IS_WINDOWS } = require("./hooksConfig");
 
 const TRAY_ICONS = {
   idle: path.join(__dirname, "assets", "gray-16.png"),
@@ -94,6 +94,37 @@ function applyMode(mode) {
   else if (mode === 3) win.setSize(60, 60);
   applyWindowPosition();
   win.webContents.send("mode-update", mode);
+}
+
+// Linux: Electron không hỗ trợ setLoginItemSettings, nên tự quản file autostart
+// theo chuẩn XDG. Trạng thái bật/tắt = file có tồn tại hay không.
+const AUTOSTART_FILE = path.join(
+  process.env.XDG_CONFIG_HOME || path.join(os.homedir(), ".config"),
+  "autostart",
+  "claude-traffic-light.desktop",
+);
+
+function isAutostartEnabled() {
+  return fs.existsSync(AUTOSTART_FILE);
+}
+
+function setAutostart(enabled) {
+  try {
+    if (!enabled) {
+      fs.rmSync(AUTOSTART_FILE, { force: true });
+      return;
+    }
+    // AppImage: process.execPath là bản giải nén tạm, phải dùng $APPIMAGE.
+    const exec = process.env.APPIMAGE || process.execPath;
+    fs.mkdirSync(path.dirname(AUTOSTART_FILE), { recursive: true });
+    fs.writeFileSync(
+      AUTOSTART_FILE,
+      "[Desktop Entry]\nType=Application\nName=Claude Traffic Light\n" +
+        `Exec="${exec}"\nX-GNOME-Autostart-enabled=true\nTerminal=false\n`,
+    );
+  } catch (e) {
+    /* non-fatal */
+  }
 }
 
 function showWidget() {
@@ -219,6 +250,16 @@ if (!app.requestSingleInstanceLock()) {
         },
       },
       { type: "separator" },
+      ...(process.platform === "linux"
+        ? [
+            {
+              label: "Khởi động cùng hệ thống",
+              type: "checkbox",
+              checked: isAutostartEnabled(),
+              click: (item) => setAutostart(item.checked),
+            },
+          ]
+        : []),
       {
         label: "Home",
         click: () => createSetupWindow(),
@@ -260,7 +301,20 @@ if (!app.requestSingleInstanceLock()) {
     const result = { ...settings };
     const hooks = { ...(settings.hooks || {}) };
     for (const [event, blocks] of Object.entries(HOOKS)) {
-      const existing = hooks[event] ? [...hooks[event]] : [];
+      let existing = hooks[event] ? [...hooks[event]] : [];
+      // Hook PowerShell của bản cũ không chạy được trên macOS/Linux — dọn đi
+      // (chỉ những hook gọi tới server của app này, không đụng hook khác).
+      if (!IS_WINDOWS) {
+        existing = existing
+          .map((b) => ({
+            ...b,
+            hooks: (b.hooks || []).filter(
+              (h) =>
+                !(h.shell === "powershell" && String(h.command).includes(`:${PORT}/status`)),
+            ),
+          }))
+          .filter((b) => b.hooks.length > 0);
+      }
       for (const block of blocks) {
         const newCommand = block.hooks[0].command;
         const alreadyPresent = existing.some((b) =>
@@ -312,6 +366,7 @@ if (!app.requestSingleInstanceLock()) {
     }
   });
 
+  ipcMain.handle("get-platform", () => process.platform);
   ipcMain.handle("get-script-path", () => getScriptPath());
   ipcMain.handle("get-hooks-json", () =>
     JSON.stringify({ hooks: HOOKS }, null, 2),
@@ -379,6 +434,12 @@ if (!app.requestSingleInstanceLock()) {
         /* non-fatal */
       }
     }
+  });
+
+  // Mọi đường thoát (SIGTERM khi logout/shutdown, app.quit(), menu Thoát) đều
+  // phải qua đây, nếu không handler "close" của win sẽ chặn và app không tắt.
+  app.on("before-quit", () => {
+    app.isQuiting = true;
   });
 
   app.on("window-all-closed", (e) => {
